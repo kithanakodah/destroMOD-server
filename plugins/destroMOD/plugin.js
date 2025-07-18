@@ -1,6 +1,5 @@
 "use strict";
 
-const WeaponPatcher = require('./weaponPatcher.js');
 const ZombieAI = require('./zombieAI.js');
 
 class DestroMOD_AI_Plugin {
@@ -22,12 +21,11 @@ class DestroMOD_AI_Plugin {
   MAX_VERTICAL_AGGRO_DISTANCE = 1.4;
 
   // --- ALERT MECHANIC ---
-  ALERT_RADIUS = 25.0;               // How far the "shout" for help travels.
+  ALERT_RADIUS = 20.0;               // How far the "shout" for help travels.
   ALERTED_AGGRO_RADIUS_MIN = 35.0;   // The new aggro range for alerted zombies.
   ALERTED_AGGRO_RADIUS_MAX = 45.0;
 
   constructor() {
-    this.weaponPatcher = new WeaponPatcher(this);
     this.zombieAI = new ZombieAI(this);
   }
 
@@ -37,13 +35,12 @@ class DestroMOD_AI_Plugin {
   }
 
   init(server) {
-    console.log(`[${this.name}] Initializing AI and Weapon Patches.`);
+    console.log(`[${this.name}] Initializing AI`);
     this.zombieAI.startup(server);
-    this.weaponPatcher.patchOnDelay(server);
 
     if (this.config.chatTextMessage) {
       setTimeout(() => {
-        console.log(`[${this.name}] Sending chat message from config...`);
+        console.log(`[${this.name}] Please wait for the other window as it launches the game...`);
         server.sendDataToAll('SendChatText', {
           message: this.config.chatTextMessage,
           channel: 1
