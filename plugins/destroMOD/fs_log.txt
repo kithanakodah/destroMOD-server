@@ -1,0 +1,6 @@
+[destroMOD] File system patching is active. All file reads will be logged.
+[FS_SYNC_READ] Server requested: E:\SteamLibrary\steamapps\common\H1EMU\H1EmuServerFiles\h1z1-server-QuickStart-master\node_modules\h1z1-server\data\2016\zoneData\Z1_speedTrees.json
+[FS_SYNC_READ] Server requested: C:\Users\TrevorDesk\AppData\Roaming\h1emu\single_player_accountitems.json
+[FS_SYNC_READ] Server requested: C:\Users\TrevorDesk\AppData\Roaming\h1emu\single_player_accountitems.json
+[FS_SYNC_READ] Server requested: C:\Users\TrevorDesk\AppData\Roaming\h1emu\single_player_accountitems.json
+[FS_SYNC_READ] Server requested: C:\Users\TrevorDesk\AppData\Roaming\h1emu\single_player_accountitems.json

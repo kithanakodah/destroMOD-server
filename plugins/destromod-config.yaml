@@ -1,0 +1,29 @@
+# put configuration settings for your plugin here
+# the "defaultconfig.yaml" file is for default configuration settings that are ok to be packed with the plugin only.
+
+# if you are not the developer of this plugin and are only changing configuration settings to suit the needs of your server,
+# make sure you're editing the generated config.yaml in the "plugins" directory, and not defaultconfig.yaml
+
+# ***** do not change this filename *****
+
+chatTextMessage: "destroMOD should be loaded now this is the destromod-config.yaml talking"
+
+weather:
+  defaultTemplate: "h1emubaseweather"
+  dynamicEnabled: true
+
+decay:
+  vehicleDamageTicks: 0 # damage vehicles every hour *DEFAULT 3* <--------------------------------------------------------------
+  maxVehiclesPerArea: 99 # the max amount of vehicles that can be in an area before they start taking more damage
+
+  gametime:
+  timeFrozen: false # Froze ingameTime
+  nightTimeMultiplier: 2 # This way night time pass 2 times faster than daytime
+  timeMultiplier: 36 # 1 hour IRL = 36 hours ingame, so 20 min for a full day
+  baseTime: 22 # server ingameTime start at 6 AM, 18 = 6PM *DEFAULT 6* <--------------------------------------------------------------
+
+  weapon_overrides:
+  # This targets the base Sniper Rifle
+  "1373":
+    FORCE_FP_SCOPE: false
+    PLAYER_STATE_GROUP_ID: 1 # Force it to use the third-person player state

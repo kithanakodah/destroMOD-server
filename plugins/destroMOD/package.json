@@ -1,0 +1,8 @@
+{
+  "name": "destromod",
+  "version": "1.0.0",
+  "description": "Destro AI and Gameplay Mod for H1EMU",
+  "main": "index.js",
+  "author": "Kithana",
+  "license": "ISC"
+}
