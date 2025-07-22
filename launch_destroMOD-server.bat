@@ -38,9 +38,9 @@ echo Save data will be stored in: %APPDATA%h1emu\
 cd /d "%SERVER_DIR%"
 start "destroMOD Server" npm run start-2016
 
-:: Wait for 15 seconds to give the server time to initialize
-echo Waiting 15 seconds for server to initialize...
-timeout /t 15 /nobreak
+:: Wait for 10 seconds to give the server time to initialize
+echo Waiting 10 seconds for server to initialize...
+timeout /t 10 /nobreak
 
 :: Launch the H1Z1 client, explicitly setting its working directory with /D
 echo Launching H1Z1...

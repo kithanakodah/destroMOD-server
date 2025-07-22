@@ -422,9 +422,9 @@
   },
   {
     "position": [
-      -414.8999938964844,
-      23.09000015258789,
-      -1106.0699462890625,
+      832,
+      77.61000061035156,
+      2978.2099609375,
       1
     ],
     "rotation": [
@@ -546,20 +546,9 @@
             "currentDurability": 0,
             "stackCount": 1
           },
-          "0x3000000000005e83": {
-            "itemDefinitionId": 1538,
-            "slotId": 3,
-            "itemGuid": "0x3000000000005e83",
-            "containerGuid": "0x3000000000002fe8",
-            "currentDurability": 2000,
-            "stackCount": 1,
-            "weapon": {
-              "ammoCount": 0
-            }
-          },
           "0x3000000000008995": {
             "itemDefinitionId": 48,
-            "slotId": 4,
+            "slotId": 3,
             "itemGuid": "0x3000000000008995",
             "containerGuid": "0x3000000000002fe8",
             "currentDurability": 0,
@@ -567,18 +556,40 @@
           },
           "0x300000000000812a": {
             "itemDefinitionId": 155,
-            "slotId": 5,
+            "slotId": 4,
             "itemGuid": "0x300000000000812a",
             "containerGuid": "0x3000000000002fe8",
             "currentDurability": 0,
             "stackCount": 1
+          },
+          "0x3000000000005e83": {
+            "itemDefinitionId": 1538,
+            "slotId": 5,
+            "itemGuid": "0x3000000000005e83",
+            "containerGuid": "0x3000000000002fe8",
+            "currentDurability": 720,
+            "stackCount": 1,
+            "weapon": {
+              "ammoCount": 0
+            }
+          },
+          "0x3000000000006b18": {
+            "itemDefinitionId": 1373,
+            "slotId": 6,
+            "itemGuid": "0x3000000000006b18",
+            "containerGuid": "0x3000000000002fe8",
+            "currentDurability": 1964,
+            "stackCount": 1,
+            "weapon": {
+              "ammoCount": 0
+            }
           }
         }
       }
     },
     "_resources": {
-      "396": 1916.162799999999,
-      "561": 78987.52
+      "396": 481.8673999999977,
+      "561": 94746.96
     },
     "worldSaveVersion": 0,
     "vehicleId": 3,
@@ -587,9 +598,9 @@
     "characterId": "0x8ca9c7d98cffc402",
     "serverId": 0,
     "positionUpdate": {
-      "orientation": 1.7800264358520508,
+      "orientation": -0.09903852641582489,
       "frontTilt": 0.01,
-      "sideTilt": 0.01
+      "sideTilt": -0.01
     }
   },
   {
@@ -4532,9 +4543,9 @@
   },
   {
     "position": [
-      735.4099731445312,
-      16.690000534057617,
-      63.689998626708984,
+      735.4199829101562,
+      16.780000686645508,
+      63.59000015258789,
       1
     ],
     "rotation": [
@@ -4589,15 +4600,6 @@
         "stackCount": 1,
         "loadoutItemOwnerGuid": "0x7e03caa3a0051380"
       },
-      "34": {
-        "itemDefinitionId": 1701,
-        "slotId": 34,
-        "itemGuid": "0x300000000000a119",
-        "containerGuid": "0xFFFFFFFFFFFFFFFF",
-        "currentDurability": 0,
-        "stackCount": 1,
-        "loadoutItemOwnerGuid": "0x7e03caa3a0051380"
-      },
       "36": {
         "itemDefinitionId": 1858,
         "slotId": 36,
@@ -4641,7 +4643,7 @@
     "characterId": "0x7e03caa3a0051380",
     "serverId": 0,
     "positionUpdate": {
-      "orientation": -0.12202655524015427
+      "orientation": -0.12166062742471695
     }
   },
   {
@@ -5734,6 +5736,102 @@
     "serverId": 0,
     "positionUpdate": {
       "orientation": 2.3217878341674805
+    }
+  },
+  {
+    "position": [
+      -547.4299926757812,
+      40.150001525878906,
+      1181.4599609375,
+      1
+    ],
+    "rotation": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "_loadout": {
+      "19": {
+        "itemDefinitionId": 1344,
+        "slotId": 19,
+        "itemGuid": "0x30000000000089b0",
+        "containerGuid": "0xFFFFFFFFFFFFFFFF",
+        "currentDurability": 0,
+        "stackCount": 1,
+        "loadoutItemOwnerGuid": "0x3067f40673e3ea8b"
+      },
+      "32": {
+        "itemDefinitionId": 1541,
+        "slotId": 32,
+        "itemGuid": "0x30000000000089af",
+        "containerGuid": "0xFFFFFFFFFFFFFFFF",
+        "currentDurability": 2000,
+        "stackCount": 1,
+        "loadoutItemOwnerGuid": "0x3067f40673e3ea8b"
+      },
+      "33": {
+        "itemDefinitionId": 1696,
+        "slotId": 33,
+        "itemGuid": "0x30000000000089b3",
+        "containerGuid": "0xFFFFFFFFFFFFFFFF",
+        "currentDurability": 0,
+        "stackCount": 1,
+        "loadoutItemOwnerGuid": "0x3067f40673e3ea8b"
+      },
+      "36": {
+        "itemDefinitionId": 1858,
+        "slotId": 36,
+        "itemGuid": "0x30000000000089b2",
+        "containerGuid": "0xFFFFFFFFFFFFFFFF",
+        "currentDurability": 0,
+        "stackCount": 1,
+        "loadoutItemOwnerGuid": "0x3067f40673e3ea8b"
+      },
+      "44": {
+        "itemDefinitionId": 3458,
+        "slotId": 44,
+        "itemGuid": "0x30000000000089b1",
+        "containerGuid": "0xFFFFFFFFFFFFFFFF",
+        "currentDurability": 0,
+        "stackCount": 1,
+        "loadoutItemOwnerGuid": "0x3067f40673e3ea8b"
+      }
+    },
+    "_containers": {
+      "32": {
+        "itemDefinitionId": 1541,
+        "slotId": 32,
+        "itemGuid": "0x30000000000089af",
+        "containerGuid": "0xFFFFFFFFFFFFFFFF",
+        "currentDurability": 2000,
+        "stackCount": 1,
+        "loadoutItemOwnerGuid": "0x3067f40673e3ea8b",
+        "containerDefinitionId": 62,
+        "items": {
+          "0x30000000000089b4": {
+            "itemDefinitionId": 3460,
+            "slotId": 0,
+            "itemGuid": "0x30000000000089b4",
+            "containerGuid": "0x30000000000089af",
+            "currentDurability": 0,
+            "stackCount": 1
+          }
+        }
+      }
+    },
+    "_resources": {
+      "396": 7500,
+      "561": 100000
+    },
+    "worldSaveVersion": 0,
+    "vehicleId": 1,
+    "actorModelId": 10060,
+    "shaderGroupId": 837,
+    "characterId": "0x3067f40673e3ea8b",
+    "serverId": 0,
+    "positionUpdate": {
+      "orientation": -2.3587965965270996
     }
   }
 ]

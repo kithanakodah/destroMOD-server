@@ -105,7 +105,7 @@ worldobjects:
   # How far another spawned npc has to be for another to spawn
   npcSpawnRadius: 3
   chanceNpc: 100 # To be reworked: 100 max
-  chanceScreamer: 5 # To be reworked: 1000 max
+  chanceScreamer: 0 # To be reworked: 1000 max
 
   chanceWornLetter: 1 # 100 max
 
