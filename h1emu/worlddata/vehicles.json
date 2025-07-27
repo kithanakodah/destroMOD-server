@@ -422,9 +422,9 @@
   },
   {
     "position": [
-      832,
-      77.61000061035156,
-      2978.2099609375,
+      -397.32000732421875,
+      71.83000183105469,
+      2605.659912109375,
       1
     ],
     "rotation": [
@@ -546,36 +546,9 @@
             "currentDurability": 0,
             "stackCount": 1
           },
-          "0x3000000000008995": {
-            "itemDefinitionId": 48,
-            "slotId": 3,
-            "itemGuid": "0x3000000000008995",
-            "containerGuid": "0x3000000000002fe8",
-            "currentDurability": 0,
-            "stackCount": 3
-          },
-          "0x300000000000812a": {
-            "itemDefinitionId": 155,
-            "slotId": 4,
-            "itemGuid": "0x300000000000812a",
-            "containerGuid": "0x3000000000002fe8",
-            "currentDurability": 0,
-            "stackCount": 1
-          },
-          "0x3000000000005e83": {
-            "itemDefinitionId": 1538,
-            "slotId": 5,
-            "itemGuid": "0x3000000000005e83",
-            "containerGuid": "0x3000000000002fe8",
-            "currentDurability": 720,
-            "stackCount": 1,
-            "weapon": {
-              "ammoCount": 0
-            }
-          },
           "0x3000000000006b18": {
             "itemDefinitionId": 1373,
-            "slotId": 6,
+            "slotId": 3,
             "itemGuid": "0x3000000000006b18",
             "containerGuid": "0x3000000000002fe8",
             "currentDurability": 1964,
@@ -583,13 +556,56 @@
             "weapon": {
               "ammoCount": 0
             }
+          },
+          "0x3000000000006b34": {
+            "itemDefinitionId": 25,
+            "slotId": 4,
+            "itemGuid": "0x3000000000006b34",
+            "containerGuid": "0x3000000000002fe8",
+            "currentDurability": 0,
+            "stackCount": 4
+          },
+          "0x3000000000005f92": {
+            "itemDefinitionId": 1384,
+            "slotId": 5,
+            "itemGuid": "0x3000000000005f92",
+            "containerGuid": "0x3000000000002fe8",
+            "currentDurability": 0,
+            "stackCount": 1
+          },
+          "0x3000000000006014": {
+            "itemDefinitionId": 2246,
+            "slotId": 6,
+            "itemGuid": "0x3000000000006014",
+            "containerGuid": "0x3000000000002fe8",
+            "currentDurability": 1655,
+            "stackCount": 1,
+            "weapon": {
+              "ammoCount": 0
+            }
+          },
+          "0x3000000000008998": {
+            "itemDefinitionId": 1432,
+            "slotId": 7,
+            "itemGuid": "0x3000000000008998",
+            "containerGuid": "0x3000000000002fe8",
+            "currentDurability": 2000,
+            "stackCount": 1
+          },
+          "0x3000000000008324": {
+            "itemDefinitionId": 16,
+            "slotId": 8,
+            "itemGuid": "0x3000000000008324",
+            "containerGuid": "0x3000000000002fe8",
+            "currentDurability": 0,
+            "stackCount": 8
           }
         }
       }
     },
     "_resources": {
-      "396": 481.8673999999977,
-      "561": 94746.96
+      "396": 3701.2048999999993,
+      "561": 90206.96
     },
     "worldSaveVersion": 0,
     "vehicleId": 3,
@@ -598,9 +614,9 @@
     "characterId": "0x8ca9c7d98cffc402",
     "serverId": 0,
     "positionUpdate": {
-      "orientation": -0.09903852641582489,
-      "frontTilt": 0.01,
-      "sideTilt": -0.01
+      "orientation": -1.1217111349105835,
+      "frontTilt": 0.13,
+      "sideTilt": -0.14
     }
   },
   {

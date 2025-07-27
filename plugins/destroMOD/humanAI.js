@@ -1,5 +1,5 @@
 // ========================================
-// Human NPC AI - Enhanced with Proper Head Tracking and Distance Management
+// Human NPC AI - FIXED: Single Loot Bag Only
 // File: E:\...\destroMOD-server\plugins\destroMOD\humanAI.js
 // ========================================
 
@@ -15,6 +15,9 @@ const { Items } = require(path.join(serverModulePath, 'out/servers/ZoneServer201
 class HumanAI {
     constructor(plugin) {
         this.plugin = plugin;
+        this.debugMode = false; // Reduced debug output for cleaner console
+        this.lastDebugTime = 0;
+        this.hasHookedDamage = false; // Track if we've hooked damage system
     }
 
     startup(server) {
@@ -25,43 +28,86 @@ class HumanAI {
         // Create a separate set for human NPCs
         aiManager.humanNpcEntities = new Set();
         
-        // Store original addEntity method
-        const originalAddEntity = aiManager.addEntity.bind(aiManager);
+        // Store original methods BEFORE zombieAI overwrites them
+        if (!aiManager.originalAddEntity) {
+            aiManager.originalAddEntity = aiManager.addEntity.bind(aiManager);
+        }
+        if (!aiManager.originalRun) {
+            aiManager.originalRun = aiManager.run.bind(aiManager);
+        }
+        
+        // Enhanced addEntity that properly handles both zombies and humans
         aiManager.addEntity = (entity) => {
             if (entity instanceof Npc) {
-                // Check if this is a human NPC (you can identify by model ID or a custom flag)
-                if (entity.isHumanNPC) {
+                // Only log human NPCs to reduce spam
+                if (entity.isHumanNPC === true || entity.actorModelId === 9469) {
+                    console.log(`[${this.plugin.name}] [DEBUG] Adding HUMAN entity ${entity.characterId}: isHumanNPC=${entity.isHumanNPC}, modelId=${entity.actorModelId}`);
+                }
+                
+                if (entity.isHumanNPC === true) {
+                    // This is a HUMAN NPC
                     aiManager.humanNpcEntities.add(entity);
-                    // Set human-specific properties
+                    
+                    // Set HUMAN-specific properties (different from zombies)
                     entity.personalShootRadius = this.plugin.SHOOT_RADIUS_MIN + Math.random() * (this.plugin.SHOOT_RADIUS_MAX - this.plugin.SHOOT_RADIUS_MIN);
                     entity.personalAggroRadius = this.plugin.AGGRO_RADIUS_MIN + Math.random() * (this.plugin.AGGRO_RADIUS_MAX - this.plugin.AGGRO_RADIUS_MIN);
                     entity.personalMoveSpeed = this.plugin.MOVE_SPEED_MIN + Math.random() * (this.plugin.MOVE_SPEED_MAX - this.plugin.MOVE_SPEED_MIN);
-                    // Don't randomly assign weapon - use the one set by the spawn function
+                    
+                    // HUMAN-specific AI state
+                    entity.aiType = 'HUMAN';
+                    entity.trackingRange = entity.personalAggroRadius;
+                    
+                    // Don't randomly assign weapon - use the one set by spawn function
                     if (!entity.weapon) {
                         entity.weapon = this.assignRandomWeapon();
                     }
-                    console.log(`[${this.plugin.name}] Human NPC ${entity.characterId} added with weapon ${Items[entity.weapon] || entity.weapon}`);
+                    
+                    console.log(`[${this.plugin.name}] Human NPC ${entity.characterId} configured: weapon=${Items[entity.weapon] || entity.weapon}, shootRadius=${entity.personalShootRadius.toFixed(1)}, aggroRadius=${entity.personalAggroRadius.toFixed(1)}`);
+                    
                 } else {
-                    // Regular NPC (zombie), add to normal set
+                    // This is a ZOMBIE NPC
+                    if (!aiManager.npcEntities) {
+                        aiManager.npcEntities = new Set();
+                    }
                     aiManager.npcEntities.add(entity);
+                    
+                    // Set ZOMBIE-specific properties
                     entity.personalAttackRadius = this.plugin.ATTACK_RADIUS_MIN + Math.random() * (this.plugin.ATTACK_RADIUS_MAX - this.plugin.ATTACK_RADIUS_MIN);
                     entity.personalAggroRadius = this.plugin.AGGRO_RADIUS_MIN + Math.random() * (this.plugin.AGGRO_RADIUS_MAX - this.plugin.AGGRO_RADIUS_MIN);
                     entity.personalMoveSpeed = this.plugin.MOVE_SPEED_MIN + Math.random() * (this.plugin.MOVE_SPEED_MAX - this.plugin.MOVE_SPEED_MIN);
+                    
+                    entity.aiType = 'ZOMBIE';
                 }
             }
-            originalAddEntity(entity);
+            
+            // Call original method
+            aiManager.originalAddEntity(entity);
         };
-        console.log(`[${this.plugin.name}] Patched AIManager to handle Human NPC entities.`);
+        
+        console.log(`[${this.plugin.name}] Patched AIManager.addEntity to handle both Human and Zombie NPCs separately.`);
 
+        // Patch damage handling for humans specifically (ONLY LOOT BAG CREATION)
         this.patchHumanNpcDamage(server);
 
-        // Patch the AI run method to include human NPCs
-        const originalRun = aiManager.run.bind(aiManager);
+        // Enhanced run method that handles both AI types
         aiManager.run = () => {
-            originalRun(); // Run original AI for zombies
-            this.runHumanAiTick(aiManager); // Run our human AI
+            // Run original AI logic first
+            if (aiManager.originalRun) {
+                aiManager.originalRun();
+            }
+            
+            // Run zombie AI if zombies exist
+            if (aiManager.npcEntities && aiManager.npcEntities.size > 0) {
+                this.runZombieAiTick(aiManager);
+            }
+            
+            // Run human AI if humans exist
+            if (aiManager.humanNpcEntities && aiManager.humanNpcEntities.size > 0) {
+                this.runHumanAiTick(aiManager);
+            }
         };
-        console.log(`[${this.plugin.name}] Human AI is now fully active.`);
+        
+        console.log(`[${this.plugin.name}] Human AI is now fully active with separate processing.`);
     }
 
     assignRandomWeapon() {
@@ -75,7 +121,18 @@ class HumanAI {
     patchHumanNpcDamage(server) {
         const plugin = this.plugin;
         const humanAI = this;
+        
+        // Only patch if not already patched
+        if (this.hasHookedDamage) {
+            console.log(`[${plugin.name}] Damage already patched for humans...`);
+            return;
+        }
+        
+        // SIMPLIFIED: Only hook for loot bag creation
         const originalDamage = Npc.prototype.damage;
+        if (!Npc.prototype.originalDamage) {
+            Npc.prototype.originalDamage = originalDamage;
+        }
 
         Npc.prototype.damage = async function(server, damageInfo) {
             let wasJustEnraged = false;
@@ -87,34 +144,63 @@ class HumanAI {
                 }
             }
 
-            if (client && this.isHumanNPC) {
-                if (this.personalAggroRadius < plugin.ENRAGED_AGGRO_RADIUS) {
-                    console.log(`[${plugin.name}] Human NPC ${this.characterId} enraged by player! New aggro radius: ${plugin.ENRAGED_AGGRO_RADIUS}`);
-                    this.personalAggroRadius = plugin.ENRAGED_AGGRO_RADIUS;
-                    this.personalShootRadius = plugin.ENRAGED_SHOOT_RADIUS;
-                    wasJustEnraged = true;
+            // Store health info to detect death
+            const willDie = (this.health - damageInfo.damage) <= 0 && this.isAlive;
+
+            if (client) {
+                if (this.isHumanNPC === true) {
+                    // HUMAN NPC damage handling
+                    if (this.personalAggroRadius < plugin.ENRAGED_AGGRO_RADIUS) {
+                        console.log(`[${plugin.name}] Human NPC ${this.characterId} enraged!`);
+                        this.personalAggroRadius = plugin.ENRAGED_AGGRO_RADIUS;
+                        this.personalShootRadius = plugin.ENRAGED_SHOOT_RADIUS;
+                        this.trackingRange = plugin.ENRAGED_AGGRO_RADIUS;
+                        wasJustEnraged = true;
+                    }
+                } else {
+                    // ZOMBIE NPC damage handling
+                    if (this.personalAggroRadius < plugin.ENRAGED_AGGRO_RADIUS) {
+                        this.personalAggroRadius = plugin.ENRAGED_AGGRO_RADIUS;
+                        wasJustEnraged = true;
+                    }
                 }
             }
             
-            // Call the original damage function first
+            // Call the original damage function
             const result = await originalDamage.apply(this, arguments);
 
-            // If the human NPC was just enraged, alert nearby humans
-            if (wasJustEnraged && this.isHumanNPC) {
-                humanAI.alertNearbyHumans(this, server);
+            // SINGLE LOOT BAG: Only create loot bag if this is a human NPC that will die
+            if (this.isHumanNPC === true && willDie && server.destroMOD && !this.lootBagCreated) {
+                this.lootBagCreated = true; // Mark as processed
+                console.log(`[${plugin.name}] Human NPC ${this.characterId} died - creating SINGLE loot bag...`);
+                
+                // Delay to ensure death is processed
+                setTimeout(() => {
+                    if (server.destroMOD && typeof server.destroMOD.createHumanNPCLootBag === 'function') {
+                        server.destroMOD.createHumanNPCLootBag(server, this);
+                    }
+                }, 100); // Shorter delay
+            }
+
+            // Alert nearby NPCs
+            if (wasJustEnraged) {
+                if (this.isHumanNPC === true) {
+                    humanAI.alertNearbyHumans(this, server);
+                } else {
+                    humanAI.alertNearbyZombies(this, server);
+                }
             }
 
             return result;
         };
 
-        console.log(`[${plugin.name}] Patched Npc.damage to handle human aggro and alerts.`);
+        this.hasHookedDamage = true;
+        console.log(`[${plugin.name}] Patched damage system for SINGLE loot bag creation.`);
     }
 
     alertNearbyHumans(enragedHuman, server) {
         const aiManager = server.aiManager;
         const plugin = this.plugin;
-
-        console.log(`[${plugin.name}] Enraged human ${enragedHuman.characterId} is alerting others within ${plugin.ALERT_RADIUS} units.`);
 
         if (aiManager.humanNpcEntities) {
             aiManager.humanNpcEntities.forEach((otherNpc) => {
@@ -129,13 +215,60 @@ class HumanAI {
                     const newShootRadius = plugin.ALERTED_SHOOT_RADIUS_MIN + Math.random() * (plugin.ALERTED_SHOOT_RADIUS_MAX - plugin.ALERTED_SHOOT_RADIUS_MIN);
                     
                     if (otherNpc.personalAggroRadius < newAggroRadius) {
-                        console.log(`[${plugin.name}] Human NPC ${enragedHuman.characterId} alerted nearby human ${otherNpc.characterId}! New aggro: ${newAggroRadius.toFixed(2)}`);
                         otherNpc.personalAggroRadius = newAggroRadius;
                         otherNpc.personalShootRadius = newShootRadius;
+                        otherNpc.trackingRange = newAggroRadius;
                     }
                 }
             });
         }
+    }
+
+    alertNearbyZombies(enragedZombie, server) {
+        const aiManager = server.aiManager;
+        const plugin = this.plugin;
+
+        if (aiManager.npcEntities) {
+            aiManager.npcEntities.forEach((otherNpc) => {
+                if (otherNpc.characterId === enragedZombie.characterId || !otherNpc.isAlive) {
+                    return;
+                }
+
+                const distance = getDistance(enragedZombie.state.position, otherNpc.state.position);
+
+                if (distance <= plugin.ALERT_RADIUS) {
+                    const newAggroRadius = plugin.ALERTED_AGGRO_RADIUS_MIN + Math.random() * (plugin.ALERTED_AGGRO_RADIUS_MAX - plugin.ALERTED_AGGRO_RADIUS_MIN);
+                    
+                    if (otherNpc.personalAggroRadius < newAggroRadius) {
+                        otherNpc.personalAggroRadius = newAggroRadius;
+                    }
+                }
+            });
+        }
+    }
+
+    // Standard AI methods (unchanged)
+    runZombieAiTick(aiManager) {
+        if (!aiManager.npcEntities) return;
+        
+        aiManager.npcEntities.forEach((npc) => {
+            try {
+                if (!npc || !npc.state || npc.aiType === 'HUMAN') { return; }
+                if (npc.aiState === undefined) npc.aiState = 'IDLE';
+                if (!npc.isAlive) {
+                    if (npc.aiState !== 'IDLE') this.changeZombieState(npc, 'IDLE');
+                    return;
+                }
+                const closestPlayer = this.findClosestPlayer(npc, aiManager);
+                const newState = this.determineZombieState(npc, closestPlayer);
+                if (npc.aiState !== newState) { this.changeZombieState(npc, newState); }
+                this.executeZombieContinuousAction(npc, closestPlayer);
+            } catch (e) {
+                if (this.debugMode) {
+                    console.error(`[${this.plugin.name}] Zombie AI tick failed for NPC ${npc.characterId || 'UNKNOWN'}:`, e);
+                }
+            }
+        });
     }
 
     runHumanAiTick(aiManager) {
@@ -149,9 +282,13 @@ class HumanAI {
                     if (npc.aiState !== 'IDLE') this.changeHumanState(npc, 'IDLE');
                     return;
                 }
+                
                 const closestPlayer = this.findClosestPlayer(npc, aiManager);
                 const newState = this.determineHumanState(npc, closestPlayer);
-                if (npc.aiState !== newState) { this.changeHumanState(npc, newState); }
+                
+                if (npc.aiState !== newState) { 
+                    this.changeHumanState(npc, newState); 
+                }
                 this.executeHumanContinuousAction(npc, closestPlayer);
             } catch (e) {
                 console.error(`[${this.plugin.name}] Human AI tick failed for NPC ${npc.characterId || 'UNKNOWN'}:`, e);
@@ -162,7 +299,9 @@ class HumanAI {
     changeHumanState(npc, newState) {
         const oldState = npc.aiState || 'IDLE';
         if (oldState === newState) return;
+        
         npc.aiState = newState;
+        
         switch (newState) {
             case 'IDLE': 
                 this.executeStop(npc); 
@@ -178,9 +317,38 @@ class HumanAI {
         }
     }
 
+    changeZombieState(npc, newState) {
+        const oldState = npc.aiState || 'IDLE';
+        if (oldState === newState) return;
+        npc.aiState = newState;
+        switch (newState) {
+            case 'IDLE': this.executeStop(npc); npc.playAnimation("Idle"); break;
+            case 'ATTACKING': this.executeStop(npc); break;
+            case 'CHASING': npc.playAnimation("walk"); break;
+        }
+    }
+
     executeHumanContinuousAction(npc, target) {
+        if (npc.aiState === 'CHASING' && target) { 
+            this.executeMovement(npc, target); 
+        }
+        if (npc.aiState === 'SHOOTING' && target) { 
+        npc.server.destroMOD.humanShoot.tryShoot(npc, target); 
+        }
+        
+        if (target && npc.aiState !== 'IDLE') {
+            const distance = getDistance(npc.state.position, target.state.position);
+            const trackingRange = npc.trackingRange || npc.personalAggroRadius;
+            
+            if (distance <= trackingRange) {
+                this.faceTarget(npc, target);
+            }
+        }
+    }
+
+    executeZombieContinuousAction(npc, target) {
         if (npc.aiState === 'CHASING' && target) { this.executeMovement(npc, target); }
-        if (npc.aiState === 'SHOOTING' && target) { this.tryShoot(npc, target); }
+        if (npc.aiState === 'ATTACKING' && target) { this.tryAttack(npc, target); }
     }
 
     executeMovement(npc, target) {
@@ -192,155 +360,83 @@ class HumanAI {
         if (length < 0.1) return;
         const normX = dirX / length;
         const normZ = dirZ / length;
-        npc.state.position[0] += normX * moveDistance;
+        npc.state.position[0] += normX * moveDistance;  
         npc.state.position[2] += normZ * moveDistance;
         const orientation = Math.atan2(normX, normZ);
         this.sendMovementPacket(npc, orientation, moveSpeed);
     }
 
-    // ENHANCED: Realistic Head Tracking with Forward Focus
     faceTarget(npc, target) {
         const now = Date.now();
         
-        // Initialize tracking state if needed
         if (!npc.lastFaceUpdate) {
             npc.lastFaceUpdate = 0;
             npc.currentFacing = npc.state.orientation || 0;
-            npc.comfortZone = 0.25; // ~14 degrees comfort zone
+            npc.comfortZone = 0.1;
         }
         
-        // Don't update face direction too frequently (realistic)
-        if (now - npc.lastFaceUpdate < 600) { 
-            return; // Keep current facing
+        if (now - npc.lastFaceUpdate < 100) { 
+            return;
         }
         
         const dirX = target.state.position[0] - npc.state.position[0];
         const dirZ = target.state.position[2] - npc.state.position[2];
         const distance = Math.sqrt(dirX * dirX + dirZ * dirZ);
         
-        // Don't track if too close (prevents spinning)
-        if (distance < 2.5) {
+        if (distance < 0.5) {
             return;
         }
         
         const targetOrientation = Math.atan2(dirX, dirZ);
         const currentOrientation = npc.currentFacing;
         
-        // Calculate angle difference
         let angleDiff = targetOrientation - currentOrientation;
         while (angleDiff > Math.PI) angleDiff -= 2 * Math.PI;
         while (angleDiff < -Math.PI) angleDiff += 2 * Math.PI;
         
-        // Only update if outside comfort zone
         if (Math.abs(angleDiff) < npc.comfortZone) {
-            return; // Stay looking current direction - FORWARD FOCUS!
+            return;
         }
         
         npc.lastFaceUpdate = now;
         
-        // Smooth rotation toward target
-        const rotationSpeed = 0.08; // Slow, realistic
+        let rotationSpeed = 0.25;
         let newOrientation;
         
-        if (Math.abs(angleDiff) <= rotationSpeed) {
-            newOrientation = targetOrientation; // Close enough, snap
+        if (Math.abs(angleDiff) > 1.5) {
+            newOrientation = targetOrientation;
+        } else if (Math.abs(angleDiff) <= rotationSpeed) {
+            newOrientation = targetOrientation;
         } else {
+            if (Math.abs(angleDiff) > 0.8) {
+                rotationSpeed = 0.4;
+            }
             newOrientation = currentOrientation + (angleDiff > 0 ? rotationSpeed : -rotationSpeed);
         }
         
-        // Normalize angle
         while (newOrientation > Math.PI) newOrientation -= 2 * Math.PI;
         while (newOrientation < -Math.PI) newOrientation += 2 * Math.PI;
         
         npc.currentFacing = newOrientation;
-        
-        // Send the movement packet
         this.sendMovementPacket(npc, newOrientation, 0);
     }
 
-    // ENHANCED: Better Shooting with Proper Distance Management
-    tryShoot(npc, target) {
+    tryAttack(npc, target) {
         const now = Date.now();
-        const canShootAt = this.plugin.shootCooldowns.get(npc.characterId) || 0;
-        if (now >= canShootAt) {
-            const randomCooldown = randomIntFromInterval(this.plugin.SHOOT_COOLDOWN_MIN_MS, this.plugin.SHOOT_COOLDOWN_MAX_MS);
-            this.plugin.shootCooldowns.set(npc.characterId, now + randomCooldown);
-            
-            // Face target BEFORE shooting (with proper distance check)
+        const canAttackAt = this.plugin.attackCooldowns.get(npc.characterId) || 0;
+        if (now >= canAttackAt) {
+            const randomCooldown = randomIntFromInterval(this.plugin.ATTACK_COOLDOWN_MIN_MS, this.plugin.ATTACK_COOLDOWN_MAX_MS);
+            this.plugin.attackCooldowns.set(npc.characterId, now + randomCooldown);
             this.faceTarget(npc, target);
-            
-            npc.playAnimation("Combat_Rifle_Fire");
-            
-            // Calculate weapon damage
-            const weaponDamage = this.getWeaponDamage(npc.weapon);
-            
-            // Create damage info similar to your zombie system
+            npc.playAnimation("GrappleTell");
             const client = npc.server.getClientByCharId(target.characterId);
             if (client) {
-                client.character.damage(npc.server, {
-                    entity: npc.characterId,
-                    weapon: npc.weapon,
-                    damage: weaponDamage,
-                    causeBleed: true,
-                    hitReport: {
-                        sessionProjectileCount: 1,
-                        characterId: target.characterId,
-                        position: target.state.position,
-                        unknownFlag1: 0,
-                        unknownByte2: 0,
-                        totalShotCount: 1
-                    }
+                const { MeleeTypes } = require(path.join(serverModulePath, 'out/servers/ZoneServer2016/models/enums'));
+                client.character.OnMeleeHit(npc.server, {
+                    entity: npc.characterId, weapon: 0, damage: npc.npcMeleeDamage, causeBleed: false, meleeType: MeleeTypes.FISTS,
+                    hitReport: { sessionProjectileCount: 0, characterId: target.characterId, position: target.state.position, unknownFlag1: 0, unknownByte2: 0, totalShotCount: 0, hitLocation: "TORSO" }
                 });
-                
-                console.log(`[${this.plugin.name}] Human NPC ${npc.characterId} shot ${target.characterId} with ${Items[npc.weapon] || npc.weapon} for ${weaponDamage} damage`);
             }
-
-            // Enhanced weapon fire effect to all clients
-            try {
-                npc.server.sendDataToAllWithSpawnedEntity(
-                    npc.server._npcs,
-                    npc.characterId,
-                    "Weapon.FireStateUpdate",
-                    {
-                        characterId: npc.characterId,
-                        weaponItem: npc.weapon,
-                        unknownDword1: 0,
-                        firePosition: npc.state.position,
-                        fireDirection: this.getDirectionTo(npc, target),
-                        unknownDword2: 0,
-                        unknownDword3: 0,
-                        unknownDword4: 0,
-                        travelDistanceMax: 100,
-                        unknownDword5: 0,
-                        unknownByte1: 0,
-                        unknownDword6: 0
-                    }
-                );
-
-                // Add muzzle flash effect
-                npc.server.sendDataToAllWithSpawnedEntity(
-                    npc.server._npcs,
-                    npc.characterId,
-                    "Character.PlayWorldCompositeEffect",
-                    {
-                        characterId: npc.characterId,
-                        effectId: 5151, // Muzzle flash effect ID
-                        position: npc.state.position,
-                        effectTime: 1000
-                    }
-                );
-            } catch (error) {
-                console.log(`[${this.plugin.name}] Error sending weapon effects:`, error);
-            }
-        }
-    }
-
-    getWeaponDamage(weapon) {
-        switch (weapon) {
-            case Items.WEAPON_AR15: return randomIntFromInterval(180, 220);
-            case Items.WEAPON_AK47: return randomIntFromInterval(200, 240);
-            case Items.WEAPON_1911: return randomIntFromInterval(120, 160);
-            default: return randomIntFromInterval(150, 200);
         }
     }
 
@@ -352,7 +448,9 @@ class HumanAI {
     }
 
     executeStop(npc) {
-        if (npc.lastSentSpeed !== 0) { this.sendMovementPacket(npc, npc.state.orientation, 0); }
+        if (npc.lastSentSpeed !== 0) { 
+            this.sendMovementPacket(npc, npc.state.orientation, 0); 
+        }
     }
 
     sendMovementPacket(npc, orientation, speed) {
@@ -391,30 +489,41 @@ class HumanAI {
         return closestPlayer;
     }
 
-    // ENHANCED: Better State Determination with Proper Distance Management
     determineHumanState(npc, player) {
         if (!player) return 'IDLE';
+        
         const distance = getDistance(npc.state.position, player.state.position);
         const verticalDistance = Math.abs(npc.state.position[1] - player.state.position[1]);
         const shootRadius = npc.personalShootRadius || this.plugin.SHOOT_RADIUS_MAX;
         const aggroRadius = npc.personalAggroRadius || this.plugin.AGGRO_RADIUS_MAX;
         
-        if (verticalDistance > this.plugin.MAX_VERTICAL_AGGRO_DISTANCE) { return 'IDLE'; }
-        
-        // ENHANCED: Better distance management
-        // If too close, stop moving and just shoot
-        if (distance <= Math.min(shootRadius * 0.6, 8.0)) { // Stop at 60% of shoot radius or 8 meters
-            return 'SHOOTING';
+        if (verticalDistance > this.plugin.MAX_VERTICAL_AGGRO_DISTANCE) { 
+            return 'IDLE'; 
         }
-        // If in shooting range but not too close, shoot
+        
+        if (distance > aggroRadius) {
+            return 'IDLE';
+        }
+        
         if (distance <= shootRadius) {
             return 'SHOOTING';
-        }
-        // If in aggro range but outside shooting range, chase
-        if (distance <= aggroRadius) {
+        } else {
             return 'CHASING';
         }
+    }
+
+    determineZombieState(npc, player) {
+        if (!player) return 'IDLE';
+        const distance = getDistance(npc.state.position, player.state.position);
+        const verticalDistance = Math.abs(npc.state.position[1] - player.state.position[1]);
+        const attackRadius = npc.personalAttackRadius || this.plugin.ATTACK_RADIUS_MAX;
+        const aggroRadius = npc.personalAggroRadius || this.plugin.AGGRO_RADIUS_MAX;
         
+        if (verticalDistance > this.plugin.MAX_VERTICAL_AGGRO_DISTANCE) { 
+            return 'IDLE'; 
+        }
+        if (distance <= attackRadius) return 'ATTACKING';
+        if (distance <= aggroRadius) return 'CHASING';
         return 'IDLE';
     }
 }

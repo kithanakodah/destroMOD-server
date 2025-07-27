@@ -12,16 +12,16 @@
     "gender": 1,
     "isRespawning": false,
     "position": [
-      825.59,
-      78,
-      3008.65,
+      -394.85,
+      71.38,
+      2618.61,
       1
     ],
     "rotation": [
       0,
-      0.2667314410209656,
+      0.009999833069741726,
       0,
-      0.963770866394043
+      0.9999499917030334
     ],
     "spawnGridData": [
       0,
@@ -141,24 +141,24 @@
       "3": {
         "itemDefinitionId": 2229,
         "slotId": 3,
-        "itemGuid": "0x2e796f4438a1a190",
+        "itemGuid": "0x3000000000000001",
         "containerGuid": "0xFFFFFFFFFFFFFFFF",
-        "currentDurability": 1050,
+        "currentDurability": 1880,
         "stackCount": 1,
         "weapon": {
-          "ammoCount": 2
+          "ammoCount": 30
         },
         "loadoutItemOwnerGuid": "0x1efb908bf3ae8b80"
       },
       "4": {
-        "itemDefinitionId": 2246,
+        "itemDefinitionId": 3381,
         "slotId": 4,
-        "itemGuid": "0x3000000000006014",
+        "itemGuid": "0x3000000000004426",
         "containerGuid": "0xFFFFFFFFFFFFFFFF",
-        "currentDurability": 1710,
+        "currentDurability": 1930,
         "stackCount": 1,
         "weapon": {
-          "ammoCount": 1
+          "ammoCount": 15
         },
         "loadoutItemOwnerGuid": "0x1efb908bf3ae8b80"
       },
@@ -184,9 +184,9 @@
         "loadoutItemOwnerGuid": "0x1efb908bf3ae8b80"
       },
       "11": {
-        "itemDefinitionId": 2172,
+        "itemDefinitionId": 3414,
         "slotId": 11,
-        "itemGuid": "0x3000000000006007",
+        "itemGuid": "0x3000000000006a41",
         "containerGuid": "0xFFFFFFFFFFFFFFFF",
         "currentDurability": 100,
         "stackCount": 1,
@@ -202,11 +202,11 @@
         "loadoutItemOwnerGuid": "0x1efb908bf3ae8b80"
       },
       "13": {
-        "itemDefinitionId": 3212,
+        "itemDefinitionId": 2216,
         "slotId": 13,
-        "itemGuid": "0x3000000000006135",
+        "itemGuid": "0x30000000000096f7",
         "containerGuid": "0xFFFFFFFFFFFFFFFF",
-        "currentDurability": 0,
+        "currentDurability": 5400,
         "stackCount": 1,
         "loadoutItemOwnerGuid": "0x1efb908bf3ae8b80"
       },
@@ -243,6 +243,15 @@
         "itemGuid": "0x300000000000477f",
         "containerGuid": "0xFFFFFFFFFFFFFFFF",
         "currentDurability": 2000,
+        "stackCount": 1,
+        "loadoutItemOwnerGuid": "0x1efb908bf3ae8b80"
+      },
+      "38": {
+        "itemDefinitionId": 2271,
+        "slotId": 38,
+        "itemGuid": "0x3000000000004424",
+        "containerGuid": "0xFFFFFFFFFFFFFFFF",
+        "currentDurability": 492.5,
         "stackCount": 1,
         "loadoutItemOwnerGuid": "0x1efb908bf3ae8b80"
       },
@@ -290,7 +299,16 @@
         "stackCount": 1,
         "loadoutItemOwnerGuid": "0x1efb908bf3ae8b80",
         "containerDefinitionId": 21,
-        "items": {}
+        "items": {
+          "0x3000000000006b9a": {
+            "itemDefinitionId": 78,
+            "slotId": 1,
+            "itemGuid": "0x3000000000006b9a",
+            "containerGuid": "0x300000000000486c",
+            "currentDurability": 0,
+            "stackCount": 2
+          }
+        }
       },
       "12": {
         "itemDefinitionId": 2124,
@@ -318,17 +336,9 @@
             "currentDurability": 0,
             "stackCount": 1
           },
-          "0x3000000000006af0": {
-            "itemDefinitionId": 1428,
-            "slotId": 3,
-            "itemGuid": "0x3000000000006af0",
-            "containerGuid": "0x30000000000034f1",
-            "currentDurability": 0,
-            "stackCount": 44
-          },
           "0x3000000000005426": {
             "itemDefinitionId": 1992,
-            "slotId": 4,
+            "slotId": 3,
             "itemGuid": "0x3000000000005426",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -336,15 +346,15 @@
           },
           "0x300000000000546d": {
             "itemDefinitionId": 78,
-            "slotId": 5,
+            "slotId": 4,
             "itemGuid": "0x300000000000546d",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
-            "stackCount": 1
+            "stackCount": 2
           },
           "0x3000000000007aa2": {
             "itemDefinitionId": 7,
-            "slotId": 6,
+            "slotId": 5,
             "itemGuid": "0x3000000000007aa2",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -352,23 +362,15 @@
           },
           "0x3000000000008989": {
             "itemDefinitionId": 3075,
-            "slotId": 7,
+            "slotId": 6,
             "itemGuid": "0x3000000000008989",
-            "containerGuid": "0x30000000000034f1",
-            "currentDurability": 0,
-            "stackCount": 1
-          },
-          "0x3000000000006b19": {
-            "itemDefinitionId": 73,
-            "slotId": 8,
-            "itemGuid": "0x3000000000006b19",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
             "stackCount": 2
           },
           "0x3000000000002fd1": {
             "itemDefinitionId": 3460,
-            "slotId": 9,
+            "slotId": 7,
             "itemGuid": "0x3000000000002fd1",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -376,7 +378,7 @@
           },
           "0x3000000000004e33": {
             "itemDefinitionId": 2255,
-            "slotId": 10,
+            "slotId": 8,
             "itemGuid": "0x3000000000004e33",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 2000,
@@ -384,23 +386,15 @@
           },
           "0x3000000000007edf": {
             "itemDefinitionId": 134,
-            "slotId": 11,
+            "slotId": 9,
             "itemGuid": "0x3000000000007edf",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
             "stackCount": 7
           },
-          "0x3000000000008998": {
-            "itemDefinitionId": 1432,
-            "slotId": 12,
-            "itemGuid": "0x3000000000008998",
-            "containerGuid": "0x30000000000034f1",
-            "currentDurability": 2000,
-            "stackCount": 1
-          },
           "0x300000000000a0f1": {
             "itemDefinitionId": 1756,
-            "slotId": 13,
+            "slotId": 10,
             "itemGuid": "0x300000000000a0f1",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -408,7 +402,7 @@
           },
           "0x3000000000006ba9": {
             "itemDefinitionId": 1701,
-            "slotId": 14,
+            "slotId": 11,
             "itemGuid": "0x3000000000006ba9",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -416,7 +410,7 @@
           },
           "0x300000000000a0f8": {
             "itemDefinitionId": 1757,
-            "slotId": 15,
+            "slotId": 12,
             "itemGuid": "0x300000000000a0f8",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -424,39 +418,15 @@
           },
           "0x3000000000006996": {
             "itemDefinitionId": 1452,
-            "slotId": 16,
+            "slotId": 13,
             "itemGuid": "0x3000000000006996",
-            "containerGuid": "0x30000000000034f1",
-            "currentDurability": 0,
-            "stackCount": 1
-          },
-          "0x3000000000006b5a": {
-            "itemDefinitionId": 25,
-            "slotId": 17,
-            "itemGuid": "0x3000000000006b5a",
-            "containerGuid": "0x30000000000034f1",
-            "currentDurability": 0,
-            "stackCount": 4
-          },
-          "0x3000000000006b9b": {
-            "itemDefinitionId": 1429,
-            "slotId": 18,
-            "itemGuid": "0x3000000000006b9b",
-            "containerGuid": "0x30000000000034f1",
-            "currentDurability": 0,
-            "stackCount": 6
-          },
-          "0x3000000000006ba5": {
-            "itemDefinitionId": 1754,
-            "slotId": 19,
-            "itemGuid": "0x3000000000006ba5",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
             "stackCount": 1
           },
           "0x3000000000006bb0": {
             "itemDefinitionId": 1511,
-            "slotId": 20,
+            "slotId": 14,
             "itemGuid": "0x3000000000006bb0",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -464,23 +434,15 @@
           },
           "0x3000000000008931": {
             "itemDefinitionId": 26,
-            "slotId": 21,
+            "slotId": 15,
             "itemGuid": "0x3000000000008931",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
             "stackCount": 3
           },
-          "0x3000000000005f92": {
-            "itemDefinitionId": 1384,
-            "slotId": 22,
-            "itemGuid": "0x3000000000005f92",
-            "containerGuid": "0x30000000000034f1",
-            "currentDurability": 0,
-            "stackCount": 1
-          },
           "0x3000000000005da1": {
             "itemDefinitionId": 142,
-            "slotId": 23,
+            "slotId": 16,
             "itemGuid": "0x3000000000005da1",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -488,7 +450,7 @@
           },
           "0x3000000000004b54": {
             "itemDefinitionId": 1388,
-            "slotId": 24,
+            "slotId": 17,
             "itemGuid": "0x3000000000004b54",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -496,7 +458,7 @@
           },
           "0x3000000000004b53": {
             "itemDefinitionId": 1742,
-            "slotId": 25,
+            "slotId": 18,
             "itemGuid": "0x3000000000004b53",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -504,7 +466,7 @@
           },
           "0x3000000000005cb4": {
             "itemDefinitionId": 1988,
-            "slotId": 26,
+            "slotId": 19,
             "itemGuid": "0x3000000000005cb4",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -512,15 +474,15 @@
           },
           "0x300000000000600f": {
             "itemDefinitionId": 1998,
-            "slotId": 27,
+            "slotId": 20,
             "itemGuid": "0x300000000000600f",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
-            "stackCount": 38
+            "stackCount": 129
           },
           "0x3000000000006b5b": {
             "itemDefinitionId": 2204,
-            "slotId": 28,
+            "slotId": 21,
             "itemGuid": "0x3000000000006b5b",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -528,7 +490,7 @@
           },
           "0x300000000000600b": {
             "itemDefinitionId": 2236,
-            "slotId": 29,
+            "slotId": 22,
             "itemGuid": "0x300000000000600b",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 2000,
@@ -539,7 +501,7 @@
           },
           "0x300000000000601c": {
             "itemDefinitionId": 74,
-            "slotId": 30,
+            "slotId": 23,
             "itemGuid": "0x300000000000601c",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -547,7 +509,7 @@
           },
           "0x3000000000008087": {
             "itemDefinitionId": 11,
-            "slotId": 31,
+            "slotId": 24,
             "itemGuid": "0x3000000000008087",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -555,7 +517,7 @@
           },
           "0x3000000000008214": {
             "itemDefinitionId": 1402,
-            "slotId": 32,
+            "slotId": 25,
             "itemGuid": "0x3000000000008214",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -563,7 +525,7 @@
           },
           "0x3000000000006248": {
             "itemDefinitionId": 2510,
-            "slotId": 33,
+            "slotId": 26,
             "itemGuid": "0x3000000000006248",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -571,7 +533,7 @@
           },
           "0x3000000000005d0a": {
             "itemDefinitionId": 1508,
-            "slotId": 34,
+            "slotId": 27,
             "itemGuid": "0x3000000000005d0a",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -579,7 +541,7 @@
           },
           "0x3000000000005d4d": {
             "itemDefinitionId": 1512,
-            "slotId": 35,
+            "slotId": 28,
             "itemGuid": "0x3000000000005d4d",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -587,7 +549,7 @@
           },
           "0x3000000000005d4b": {
             "itemDefinitionId": 2612,
-            "slotId": 36,
+            "slotId": 29,
             "itemGuid": "0x3000000000005d4b",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -595,7 +557,7 @@
           },
           "0x30000000000088d7": {
             "itemDefinitionId": 1464,
-            "slotId": 37,
+            "slotId": 30,
             "itemGuid": "0x30000000000088d7",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -603,7 +565,7 @@
           },
           "0x3000000000005d6e": {
             "itemDefinitionId": 1510,
-            "slotId": 38,
+            "slotId": 31,
             "itemGuid": "0x3000000000005d6e",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -611,7 +573,7 @@
           },
           "0x3000000000005d27": {
             "itemDefinitionId": 1471,
-            "slotId": 39,
+            "slotId": 32,
             "itemGuid": "0x3000000000005d27",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -619,7 +581,7 @@
           },
           "0x3000000000005d26": {
             "itemDefinitionId": 1751,
-            "slotId": 40,
+            "slotId": 33,
             "itemGuid": "0x3000000000005d26",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -627,7 +589,7 @@
           },
           "0x3000000000005d2c": {
             "itemDefinitionId": 2641,
-            "slotId": 41,
+            "slotId": 34,
             "itemGuid": "0x3000000000005d2c",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -635,47 +597,31 @@
           },
           "0x3000000000009fce": {
             "itemDefinitionId": 48,
-            "slotId": 42,
+            "slotId": 35,
             "itemGuid": "0x3000000000009fce",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
-            "stackCount": 2
+            "stackCount": 6
           },
           "0x3000000000009fdf": {
             "itemDefinitionId": 1756,
-            "slotId": 43,
+            "slotId": 36,
             "itemGuid": "0x3000000000009fdf",
-            "containerGuid": "0x30000000000034f1",
-            "currentDurability": 0,
-            "stackCount": 1
-          },
-          "0x300000000000a31d": {
-            "itemDefinitionId": 2639,
-            "slotId": 44,
-            "itemGuid": "0x300000000000a31d",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
             "stackCount": 1
           },
           "0x3000000000005811": {
             "itemDefinitionId": 1396,
-            "slotId": 45,
+            "slotId": 37,
             "itemGuid": "0x3000000000005811",
-            "containerGuid": "0x30000000000034f1",
-            "currentDurability": 0,
-            "stackCount": 1
-          },
-          "0x3000000000005810": {
-            "itemDefinitionId": 1401,
-            "slotId": 46,
-            "itemGuid": "0x3000000000005810",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
             "stackCount": 1
           },
           "0x30000000000037b4": {
             "itemDefinitionId": 1719,
-            "slotId": 47,
+            "slotId": 38,
             "itemGuid": "0x30000000000037b4",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -683,7 +629,7 @@
           },
           "0x300000000000566e": {
             "itemDefinitionId": 2645,
-            "slotId": 48,
+            "slotId": 39,
             "itemGuid": "0x300000000000566e",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -691,7 +637,7 @@
           },
           "0x30000000000065f4": {
             "itemDefinitionId": 1701,
-            "slotId": 49,
+            "slotId": 40,
             "itemGuid": "0x30000000000065f4",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
@@ -699,83 +645,118 @@
           },
           "0x3000000000006c0a": {
             "itemDefinitionId": 3457,
-            "slotId": 50,
+            "slotId": 41,
             "itemGuid": "0x3000000000006c0a",
-            "containerGuid": "0x30000000000034f1",
-            "currentDurability": 0,
-            "stackCount": 1
-          },
-          "0x30000000000096f7": {
-            "itemDefinitionId": 2216,
-            "slotId": 51,
-            "itemGuid": "0x30000000000096f7",
-            "containerGuid": "0x30000000000034f1",
-            "currentDurability": 5400,
-            "stackCount": 1
-          },
-          "0x3000000000006b83": {
-            "itemDefinitionId": 71,
-            "slotId": 52,
-            "itemGuid": "0x3000000000006b83",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
             "stackCount": 1
           },
           "0x3000000000006b85": {
             "itemDefinitionId": 1353,
-            "slotId": 53,
+            "slotId": 42,
             "itemGuid": "0x3000000000006b85",
+            "containerGuid": "0x30000000000034f1",
+            "currentDurability": 0,
+            "stackCount": 2
+          },
+          "0x300000000000a119": {
+            "itemDefinitionId": 1701,
+            "slotId": 43,
+            "itemGuid": "0x300000000000a119",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
             "stackCount": 1
           },
-          "0x300000000000a119": {
-            "itemDefinitionId": 1701,
-            "slotId": 54,
-            "itemGuid": "0x300000000000a119",
+          "0x30000000000089aa": {
+            "itemDefinitionId": 109,
+            "slotId": 44,
+            "itemGuid": "0x30000000000089aa",
+            "containerGuid": "0x30000000000034f1",
+            "currentDurability": 0,
+            "stackCount": 3
+          },
+          "0x3000000000004782": {
+            "itemDefinitionId": 2344,
+            "slotId": 45,
+            "itemGuid": "0x3000000000004782",
+            "containerGuid": "0x30000000000034f1",
+            "currentDurability": 2000,
+            "stackCount": 1
+          },
+          "0x3000000000006af0": {
+            "itemDefinitionId": 1428,
+            "slotId": 46,
+            "itemGuid": "0x3000000000006af0",
+            "containerGuid": "0x30000000000034f1",
+            "currentDurability": 0,
+            "stackCount": 44
+          },
+          "0x3000000000006b9b": {
+            "itemDefinitionId": 1429,
+            "slotId": 47,
+            "itemGuid": "0x3000000000006b9b",
+            "containerGuid": "0x30000000000034f1",
+            "currentDurability": 0,
+            "stackCount": 6
+          },
+          "0x3000000000006ba5": {
+            "itemDefinitionId": 1754,
+            "slotId": 48,
+            "itemGuid": "0x3000000000006ba5",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
             "stackCount": 1
           },
           "0x30000000000080b0": {
             "itemDefinitionId": 112,
-            "slotId": 55,
+            "slotId": 49,
             "itemGuid": "0x30000000000080b0",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 2000,
-            "stackCount": 20
+            "stackCount": 10
           },
-          "0x30000000000089aa": {
-            "itemDefinitionId": 109,
-            "slotId": 56,
-            "itemGuid": "0x30000000000089aa",
+          "0x300000000000a31d": {
+            "itemDefinitionId": 2639,
+            "slotId": 50,
+            "itemGuid": "0x300000000000a31d",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
-            "stackCount": 3
-          },
-          "0x3000000000008324": {
-            "itemDefinitionId": 16,
-            "slotId": 57,
-            "itemGuid": "0x3000000000008324",
-            "containerGuid": "0x30000000000034f1",
-            "currentDurability": 0,
-            "stackCount": 4
-          },
-          "0x3000000000004782": {
-            "itemDefinitionId": 2344,
-            "slotId": 58,
-            "itemGuid": "0x3000000000004782",
-            "containerGuid": "0x30000000000034f1",
-            "currentDurability": 2000,
             "stackCount": 1
           },
-          "0x3000000000006229": {
-            "itemDefinitionId": 24,
-            "slotId": 59,
-            "itemGuid": "0x3000000000006229",
+          "0x3000000000005e83": {
+            "itemDefinitionId": 1538,
+            "slotId": 51,
+            "itemGuid": "0x3000000000005e83",
+            "containerGuid": "0x30000000000034f1",
+            "currentDurability": 720,
+            "stackCount": 1,
+            "weapon": {
+              "ammoCount": 0
+            }
+          },
+          "0x300000000000812a": {
+            "itemDefinitionId": 155,
+            "slotId": 52,
+            "itemGuid": "0x300000000000812a",
             "containerGuid": "0x30000000000034f1",
             "currentDurability": 0,
-            "stackCount": 9
+            "stackCount": 1
+          },
+          "0x3000000000006525": {
+            "itemDefinitionId": 2325,
+            "slotId": 53,
+            "itemGuid": "0x3000000000006525",
+            "containerGuid": "0x30000000000034f1",
+            "currentDurability": 0,
+            "stackCount": 218
+          },
+          "0x3000000000006b9c": {
+            "itemDefinitionId": 24,
+            "slotId": 54,
+            "itemGuid": "0x3000000000006b9c",
+            "containerGuid": "0x30000000000034f1",
+            "currentDurability": 0,
+            "stackCount": 6
           }
         }
       },
@@ -788,7 +769,16 @@
         "stackCount": 1,
         "loadoutItemOwnerGuid": "0x1efb908bf3ae8b80",
         "containerDefinitionId": 29,
-        "items": {}
+        "items": {
+          "0x3000000000006229": {
+            "itemDefinitionId": 24,
+            "slotId": 1,
+            "itemGuid": "0x3000000000006229",
+            "containerGuid": "0x300000000000486e",
+            "currentDurability": 0,
+            "stackCount": 15
+          }
+        }
       },
       "25": {
         "itemDefinitionId": 1803,
@@ -855,37 +845,29 @@
             "containerGuid": "0x3000000000004efd",
             "currentDurability": 0,
             "stackCount": 16
-          },
-          "0x3000000000006327": {
-            "itemDefinitionId": 16,
-            "slotId": 8,
-            "itemGuid": "0x3000000000006327",
-            "containerGuid": "0x3000000000004efd",
-            "currentDurability": 0,
-            "stackCount": 4
           }
         }
       }
     },
     "_resources": {
-      "1": 8208,
-      "4": 6122,
-      "5": 2936,
+      "1": 10000,
+      "4": 8360,
+      "5": 8912,
       "6": 600,
       "12": 0,
       "21": 0,
-      "22": 4474,
-      "68": 512
+      "22": 7712,
+      "68": 3869
     },
     "worldSaveVersion": 0,
-    "playTime": 338,
+    "playTime": 357,
     "lastDropPlayTime": 242,
     "mutedCharacters": [],
     "metrics": {
-      "zombiesKilled": 93,
-      "wildlifeKilled": 7,
+      "zombiesKilled": 101,
+      "wildlifeKilled": 17,
       "recipesDiscovered": 0,
-      "startedSurvivingTP": 3505999280432,
+      "startedSurvivingTP": 3506000415458,
       "vehiclesDestroyed": 0,
       "playersKilled": 0
     }

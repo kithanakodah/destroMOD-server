@@ -2369,6 +2369,478 @@
           "itemGuid": "0x3000000000000002",
           "containerGuid": "0x3000000000000001",
           "currentDurability": 2000,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "weapon": {
+            "itemGuid": "0x3000000000000002",
+            "itemDefinitionId": 10,
+            "ammoCount": 0,
+            "currentReloadCount": 0
+          },
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000003": {
+          "itemDefinitionId": 1904,
+          "slotId": 1,
+          "itemGuid": "0x3000000000000003",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 0,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000004": {
+          "itemDefinitionId": 1371,
+          "slotId": 2,
+          "itemGuid": "0x3000000000000004",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 0,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000005": {
+          "itemDefinitionId": 1373,
+          "slotId": 3,
+          "itemGuid": "0x3000000000000005",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 2000,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "weapon": {
+            "itemGuid": "0x3000000000000005",
+            "itemDefinitionId": 1373,
+            "ammoCount": 0,
+            "currentReloadCount": 0
+          },
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000006": {
+          "itemDefinitionId": 2229,
+          "slotId": 4,
+          "itemGuid": "0x3000000000000006",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 2000,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "weapon": {
+            "itemGuid": "0x3000000000000006",
+            "itemDefinitionId": 2229,
+            "ammoCount": 0,
+            "currentReloadCount": 0
+          },
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000007": {
+          "itemDefinitionId": 1383,
+          "slotId": 5,
+          "itemGuid": "0x3000000000000007",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 0,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "hasAirdropClearance": false
+        }
+      },
+      "canAcceptItems": true,
+      "acceptedItems": [],
+      "isMutable": true
+    },
+    "subEntityType": ""
+  },
+  {
+    "position": [
+      481.4700012207031,
+      109.86000061035156,
+      2848.610107421875,
+      1
+    ],
+    "rotation": [
+      0,
+      2.490000009536743,
+      0,
+      0
+    ],
+    "serverId": 0,
+    "characterId": "0x5fa97bf18176ad8b",
+    "actorModelId": 9248,
+    "health": 250000,
+    "placementTime": 1753305034187,
+    "parentObjectCharacterId": "",
+    "itemDefinitionId": 1697,
+    "slot": "",
+    "container": {
+      "itemDefinitionId": 1698,
+      "slotId": 31,
+      "itemGuid": "0x3000000000000001",
+      "containerGuid": "0xFFFFFFFFFFFFFFFF",
+      "currentDurability": 2000,
+      "debugFlag": "unset",
+      "stackCount": 1,
+      "hasAirdropClearance": false,
+      "loadoutItemOwnerGuid": "0x5fa97bf18176ad8b",
+      "containerDefinitionId": 77,
+      "items": {
+        "0x3000000000000002": {
+          "itemDefinitionId": 10,
+          "slotId": 0,
+          "itemGuid": "0x3000000000000002",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 2000,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "weapon": {
+            "itemGuid": "0x3000000000000002",
+            "itemDefinitionId": 10,
+            "ammoCount": 0,
+            "currentReloadCount": 0
+          },
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000003": {
+          "itemDefinitionId": 1904,
+          "slotId": 1,
+          "itemGuid": "0x3000000000000003",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 0,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000004": {
+          "itemDefinitionId": 1371,
+          "slotId": 2,
+          "itemGuid": "0x3000000000000004",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 0,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000005": {
+          "itemDefinitionId": 1373,
+          "slotId": 3,
+          "itemGuid": "0x3000000000000005",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 2000,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "weapon": {
+            "itemGuid": "0x3000000000000005",
+            "itemDefinitionId": 1373,
+            "ammoCount": 0,
+            "currentReloadCount": 0
+          },
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000006": {
+          "itemDefinitionId": 2229,
+          "slotId": 4,
+          "itemGuid": "0x3000000000000006",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 2000,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "weapon": {
+            "itemGuid": "0x3000000000000006",
+            "itemDefinitionId": 2229,
+            "ammoCount": 0,
+            "currentReloadCount": 0
+          },
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000007": {
+          "itemDefinitionId": 1383,
+          "slotId": 5,
+          "itemGuid": "0x3000000000000007",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 0,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "hasAirdropClearance": false
+        }
+      },
+      "canAcceptItems": true,
+      "acceptedItems": [],
+      "isMutable": true
+    },
+    "subEntityType": ""
+  },
+  {
+    "position": [
+      481.4700012207031,
+      109.86000061035156,
+      2848.610107421875,
+      1
+    ],
+    "rotation": [
+      0,
+      2.490000009536743,
+      0,
+      0
+    ],
+    "serverId": 0,
+    "characterId": "0xec3c32c08770f84f",
+    "actorModelId": 9248,
+    "health": 250000,
+    "placementTime": 1753305580510,
+    "parentObjectCharacterId": "",
+    "itemDefinitionId": 1697,
+    "slot": "",
+    "container": {
+      "itemDefinitionId": 1698,
+      "slotId": 31,
+      "itemGuid": "0x3000000000000001",
+      "containerGuid": "0xFFFFFFFFFFFFFFFF",
+      "currentDurability": 2000,
+      "debugFlag": "unset",
+      "stackCount": 1,
+      "hasAirdropClearance": false,
+      "loadoutItemOwnerGuid": "0xec3c32c08770f84f",
+      "containerDefinitionId": 77,
+      "items": {
+        "0x3000000000000002": {
+          "itemDefinitionId": 10,
+          "slotId": 0,
+          "itemGuid": "0x3000000000000002",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 2000,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "weapon": {
+            "itemGuid": "0x3000000000000002",
+            "itemDefinitionId": 10,
+            "ammoCount": 0,
+            "currentReloadCount": 0
+          },
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000003": {
+          "itemDefinitionId": 1904,
+          "slotId": 1,
+          "itemGuid": "0x3000000000000003",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 0,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000004": {
+          "itemDefinitionId": 1371,
+          "slotId": 2,
+          "itemGuid": "0x3000000000000004",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 0,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000005": {
+          "itemDefinitionId": 1373,
+          "slotId": 3,
+          "itemGuid": "0x3000000000000005",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 2000,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "weapon": {
+            "itemGuid": "0x3000000000000005",
+            "itemDefinitionId": 1373,
+            "ammoCount": 0,
+            "currentReloadCount": 0
+          },
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000006": {
+          "itemDefinitionId": 2229,
+          "slotId": 4,
+          "itemGuid": "0x3000000000000006",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 2000,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "weapon": {
+            "itemGuid": "0x3000000000000006",
+            "itemDefinitionId": 2229,
+            "ammoCount": 0,
+            "currentReloadCount": 0
+          },
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000007": {
+          "itemDefinitionId": 1383,
+          "slotId": 5,
+          "itemGuid": "0x3000000000000007",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 0,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "hasAirdropClearance": false
+        }
+      },
+      "canAcceptItems": true,
+      "acceptedItems": [],
+      "isMutable": true
+    },
+    "subEntityType": ""
+  },
+  {
+    "position": [
+      481.4700012207031,
+      109.86000061035156,
+      2848.610107421875,
+      1
+    ],
+    "rotation": [
+      0,
+      2.490000009536743,
+      0,
+      0
+    ],
+    "serverId": 0,
+    "characterId": "0x6e6131640e01eeed",
+    "actorModelId": 9248,
+    "health": 250000,
+    "placementTime": 1753351908825,
+    "parentObjectCharacterId": "",
+    "itemDefinitionId": 1697,
+    "slot": "",
+    "container": {
+      "itemDefinitionId": 1698,
+      "slotId": 31,
+      "itemGuid": "0x3000000000000001",
+      "containerGuid": "0xFFFFFFFFFFFFFFFF",
+      "currentDurability": 2000,
+      "debugFlag": "unset",
+      "stackCount": 1,
+      "hasAirdropClearance": false,
+      "loadoutItemOwnerGuid": "0x6e6131640e01eeed",
+      "containerDefinitionId": 77,
+      "items": {
+        "0x3000000000000002": {
+          "itemDefinitionId": 10,
+          "slotId": 0,
+          "itemGuid": "0x3000000000000002",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 2000,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "weapon": {
+            "itemGuid": "0x3000000000000002",
+            "itemDefinitionId": 10,
+            "ammoCount": 0,
+            "currentReloadCount": 0
+          },
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000003": {
+          "itemDefinitionId": 1904,
+          "slotId": 1,
+          "itemGuid": "0x3000000000000003",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 0,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000004": {
+          "itemDefinitionId": 1371,
+          "slotId": 2,
+          "itemGuid": "0x3000000000000004",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 0,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000005": {
+          "itemDefinitionId": 1373,
+          "slotId": 3,
+          "itemGuid": "0x3000000000000005",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 2000,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "weapon": {
+            "itemGuid": "0x3000000000000005",
+            "itemDefinitionId": 1373,
+            "ammoCount": 0,
+            "currentReloadCount": 0
+          },
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000006": {
+          "itemDefinitionId": 2229,
+          "slotId": 4,
+          "itemGuid": "0x3000000000000006",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 2000,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "weapon": {
+            "itemGuid": "0x3000000000000006",
+            "itemDefinitionId": 2229,
+            "ammoCount": 0,
+            "currentReloadCount": 0
+          },
+          "hasAirdropClearance": false
+        },
+        "0x3000000000000007": {
+          "itemDefinitionId": 1383,
+          "slotId": 5,
+          "itemGuid": "0x3000000000000007",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 0,
+          "debugFlag": "unset",
+          "stackCount": 1,
+          "hasAirdropClearance": false
+        }
+      },
+      "canAcceptItems": true,
+      "acceptedItems": [],
+      "isMutable": true
+    },
+    "subEntityType": ""
+  },
+  {
+    "position": [
+      481.4700012207031,
+      109.86000061035156,
+      2848.610107421875,
+      1
+    ],
+    "rotation": [
+      0,
+      2.490000009536743,
+      0,
+      0
+    ],
+    "serverId": 0,
+    "characterId": "0x31732fb0ecfedf36",
+    "actorModelId": 9248,
+    "health": 250000,
+    "placementTime": 1753552612296,
+    "parentObjectCharacterId": "",
+    "itemDefinitionId": 1697,
+    "slot": "",
+    "container": {
+      "itemDefinitionId": 1698,
+      "slotId": 31,
+      "itemGuid": "0x3000000000000001",
+      "containerGuid": "0xFFFFFFFFFFFFFFFF",
+      "currentDurability": 2000,
+      "debugFlag": "unset",
+      "stackCount": 1,
+      "hasAirdropClearance": false,
+      "loadoutItemOwnerGuid": "0x31732fb0ecfedf36",
+      "containerDefinitionId": 77,
+      "items": {
+        "0x3000000000000002": {
+          "itemDefinitionId": 10,
+          "slotId": 0,
+          "itemGuid": "0x3000000000000002",
+          "containerGuid": "0x3000000000000001",
+          "currentDurability": 2000,
           "debugFlag": "lootContainerItem",
           "stackCount": 1,
           "weapon": {
