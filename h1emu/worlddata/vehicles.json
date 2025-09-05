@@ -422,9 +422,9 @@
   },
   {
     "position": [
-      -397.32000732421875,
-      71.83000183105469,
-      2605.659912109375,
+      -41.459999084472656,
+      47.06999969482422,
+      804.7100219726562,
       1
     ],
     "rotation": [
@@ -604,8 +604,8 @@
       }
     },
     "_resources": {
-      "396": 3701.2048999999993,
-      "561": 90206.96
+      "396": 2548.0712000000026,
+      "561": 89182
     },
     "worldSaveVersion": 0,
     "vehicleId": 3,
@@ -614,9 +614,9 @@
     "characterId": "0x8ca9c7d98cffc402",
     "serverId": 0,
     "positionUpdate": {
-      "orientation": -1.1217111349105835,
-      "frontTilt": 0.13,
-      "sideTilt": -0.14
+      "orientation": -0.00144537806045264,
+      "frontTilt": -0.01,
+      "sideTilt": 0.01
     }
   },
   {
@@ -4150,9 +4150,9 @@
   },
   {
     "position": [
-      -1948.3299560546875,
-      72.08999633789062,
-      1226.1500244140625,
+      -31.920000076293945,
+      47,
+      828.5499877929688,
       1
     ],
     "rotation": [
@@ -4189,6 +4189,15 @@
         "stackCount": 1,
         "loadoutItemOwnerGuid": "0xcb0a344dcbbd1baa"
       },
+      "34": {
+        "itemDefinitionId": 1701,
+        "slotId": 34,
+        "itemGuid": "0x300000000000a119",
+        "containerGuid": "0xFFFFFFFFFFFFFFFF",
+        "currentDurability": 0,
+        "stackCount": 1,
+        "loadoutItemOwnerGuid": "0xcb0a344dcbbd1baa"
+      },
       "36": {
         "itemDefinitionId": 1858,
         "slotId": 36,
@@ -4218,29 +4227,12 @@
         "stackCount": 1,
         "loadoutItemOwnerGuid": "0xcb0a344dcbbd1baa",
         "containerDefinitionId": 62,
-        "items": {
-          "0x30000000000089b0": {
-            "itemDefinitionId": 3460,
-            "slotId": 0,
-            "itemGuid": "0x30000000000089b0",
-            "containerGuid": "0x30000000000089ab",
-            "currentDurability": 0,
-            "stackCount": 1
-          },
-          "0x30000000000089b1": {
-            "itemDefinitionId": 73,
-            "slotId": 1,
-            "itemGuid": "0x30000000000089b1",
-            "containerGuid": "0x30000000000089ab",
-            "currentDurability": 0,
-            "stackCount": 1
-          }
-        }
+        "items": {}
       }
     },
     "_resources": {
-      "396": 7500,
-      "561": 96000
+      "396": 6574.984799999998,
+      "561": 92868
     },
     "worldSaveVersion": 0,
     "vehicleId": 1,
@@ -4249,7 +4241,9 @@
     "characterId": "0xcb0a344dcbbd1baa",
     "serverId": 0,
     "positionUpdate": {
-      "orientation": -0.8706812262535095
+      "orientation": 3.011925458908081,
+      "frontTilt": -0.03,
+      "sideTilt": -0.01
     }
   },
   {
@@ -5848,6 +5842,111 @@
     "serverId": 0,
     "positionUpdate": {
       "orientation": -2.3587965965270996
+    }
+  },
+  {
+    "position": [
+      -1948.3299560546875,
+      72.08999633789062,
+      1226.1500244140625,
+      1
+    ],
+    "rotation": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "_loadout": {
+      "18": {
+        "itemDefinitionId": 9,
+        "slotId": 18,
+        "itemGuid": "0x3000000000002fcb",
+        "containerGuid": "0xFFFFFFFFFFFFFFFF",
+        "currentDurability": 0,
+        "stackCount": 1,
+        "loadoutItemOwnerGuid": "0x42af34656b9b022e"
+      },
+      "19": {
+        "itemDefinitionId": 1344,
+        "slotId": 19,
+        "itemGuid": "0x3000000000002fc6",
+        "containerGuid": "0xFFFFFFFFFFFFFFFF",
+        "currentDurability": 0,
+        "stackCount": 1,
+        "loadoutItemOwnerGuid": "0x42af34656b9b022e"
+      },
+      "32": {
+        "itemDefinitionId": 1541,
+        "slotId": 32,
+        "itemGuid": "0x3000000000002fc5",
+        "containerGuid": "0xFFFFFFFFFFFFFFFF",
+        "currentDurability": 2000,
+        "stackCount": 1,
+        "loadoutItemOwnerGuid": "0x42af34656b9b022e"
+      },
+      "33": {
+        "itemDefinitionId": 1696,
+        "slotId": 33,
+        "itemGuid": "0x3000000000002fc9",
+        "containerGuid": "0xFFFFFFFFFFFFFFFF",
+        "currentDurability": 0,
+        "stackCount": 1,
+        "loadoutItemOwnerGuid": "0x42af34656b9b022e"
+      },
+      "36": {
+        "itemDefinitionId": 1858,
+        "slotId": 36,
+        "itemGuid": "0x3000000000002fc8",
+        "containerGuid": "0xFFFFFFFFFFFFFFFF",
+        "currentDurability": 0,
+        "stackCount": 1,
+        "loadoutItemOwnerGuid": "0x42af34656b9b022e"
+      },
+      "44": {
+        "itemDefinitionId": 3458,
+        "slotId": 44,
+        "itemGuid": "0x3000000000002fc7",
+        "containerGuid": "0xFFFFFFFFFFFFFFFF",
+        "currentDurability": 0,
+        "stackCount": 1,
+        "loadoutItemOwnerGuid": "0x42af34656b9b022e"
+      }
+    },
+    "_containers": {
+      "32": {
+        "itemDefinitionId": 1541,
+        "slotId": 32,
+        "itemGuid": "0x3000000000002fc5",
+        "containerGuid": "0xFFFFFFFFFFFFFFFF",
+        "currentDurability": 2000,
+        "stackCount": 1,
+        "loadoutItemOwnerGuid": "0x42af34656b9b022e",
+        "containerDefinitionId": 62,
+        "items": {
+          "0x3000000000002fca": {
+            "itemDefinitionId": 3460,
+            "slotId": 0,
+            "itemGuid": "0x3000000000002fca",
+            "containerGuid": "0x3000000000002fc5",
+            "currentDurability": 0,
+            "stackCount": 1
+          }
+        }
+      }
+    },
+    "_resources": {
+      "396": 7500,
+      "561": 100000
+    },
+    "worldSaveVersion": 0,
+    "vehicleId": 1,
+    "actorModelId": 10060,
+    "shaderGroupId": 1003,
+    "characterId": "0x42af34656b9b022e",
+    "serverId": 0,
+    "positionUpdate": {
+      "orientation": -0.8706812262535095
     }
   }
 ]

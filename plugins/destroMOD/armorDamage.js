@@ -54,42 +54,45 @@ class ArmorDamageSystem {
       server._originalDamageItem = server.damageItem.bind(server);
       
       server.damageItem = function(character, item, damage) {
-  // Get item definition to check if it's a weapon
-  const itemDef = server.getItemDefinition(item.itemDefinitionId);
-  const isWeapon = itemDef && (
-    itemDef.ITEM_CLASS === 31 || // Weapon class
-    itemDef.ITEM_TYPE === 10 ||  // Weapon type
-    itemDef.NAME?.toLowerCase().includes('weapon') ||
-    itemDef.NAME?.toLowerCase().includes('rifle') ||
-    itemDef.NAME?.toLowerCase().includes('pistol') ||
-    itemDef.NAME?.toLowerCase().includes('shotgun') ||
-    itemDef.NAME?.toLowerCase().includes('sniper')
-  );
-  
-  // Only log non-weapon durability damage (armor, helmets, tools, etc.)
-  if (!isWeapon) {
-    console.log(`[ArmorDamageSystem] DAMAGE_ITEM_DEBUG:`);
-    console.log(`  - Character ID: ${character.characterId}`);
-    console.log(`  - Item ID: ${item.itemDefinitionId}`);
-    console.log(`  - Current Durability: ${item.currentDurability}`);
-    console.log(`  - Damage Amount: ${damage}`);
-    console.log(`  - Is Human NPC: ${character.isHumanNPC}`);
-  }
+        // Get item definition to check if it's a weapon
+        const itemDef = server.getItemDefinition(item.itemDefinitionId);
+        const isWeapon = itemDef && (
+          itemDef.ITEM_CLASS === 31 || // Weapon class
+          itemDef.ITEM_TYPE === 10 ||  // Weapon type
+          itemDef.NAME?.toLowerCase().includes('weapon') ||
+          itemDef.NAME?.toLowerCase().includes('rifle') ||
+          itemDef.NAME?.toLowerCase().includes('pistol') ||
+          itemDef.NAME?.toLowerCase().includes('shotgun') ||
+          itemDef.NAME?.toLowerCase().includes('sniper')
+        );
+        
+        // COMMENTED OUT: Only log non-weapon durability damage (armor, helmets, tools, etc.)
+        // if (!isWeapon) {
+        //   console.log(`[ArmorDamageSystem] DAMAGE_ITEM_DEBUG:`);
+        //   console.log(`  - Character ID: ${character.characterId}`);
+        //   console.log(`  - Item ID: ${item.itemDefinitionId}`);
+        //   console.log(`  - Current Durability: ${item.currentDurability}`);
+        //   console.log(`  - Damage Amount: ${damage}`);
+        //   console.log(`  - Is Human NPC: ${character.isHumanNPC}`);
+        // }
         
         // Call the original function
         const result = server._originalDamageItem(character, item, damage);
         
-        console.log(`  - New Durability: ${item.currentDurability}`);
-        console.log(`  - Item removed: ${item.currentDurability <= 0}`);
+        // COMMENTED OUT: Debug logging
+        // console.log(`  - New Durability: ${item.currentDurability}`);
+        // console.log(`  - Item removed: ${item.currentDurability <= 0}`);
         
         // Check if client was found for update
         const client = server.getClientByCharId(character.characterId);
-        console.log(`  - Client found for update: ${!!client}`);
+        // COMMENTED OUT: Debug logging
+        // console.log(`  - Client found for update: ${!!client}`);
         
         // For NPCs, update durability tracking manually since no client update happens
         if (character.isHumanNPC && character._equipmentDurability && item.currentDurability > 0) {
           character._equipmentDurability[item.itemDefinitionId] = item.currentDurability;
-          console.log(`  - Updated NPC durability tracking: ${item.itemDefinitionId} -> ${item.currentDurability}`);
+          // COMMENTED OUT: Debug logging
+          // console.log(`  - Updated NPC durability tracking: ${item.itemDefinitionId} -> ${item.currentDurability}`);
         }
         
         return result;
@@ -103,29 +106,33 @@ class ArmorDamageSystem {
       server._originalApplyArmorDamageReduction = server.applyArmorDamageReduction.bind(server);
       
       server.applyArmorDamageReduction = function(character, damage, weaponDmgModifier = 4) {
-        console.log(`[ArmorDamageSystem] APPLY_ARMOR_DAMAGE_REDUCTION_DEBUG:`);
-        console.log(`  - Character ID: ${character.characterId}`);
-        console.log(`  - Is Human NPC: ${character.isHumanNPC}`);
-        console.log(`  - Incoming Damage: ${damage}`);
-        console.log(`  - Weapon Damage Modifier: ${weaponDmgModifier}`);
+        // COMMENTED OUT: Debug logging
+        // console.log(`[ArmorDamageSystem] APPLY_ARMOR_DAMAGE_REDUCTION_DEBUG:`);
+        // console.log(`  - Character ID: ${character.characterId}`);
+        // console.log(`  - Is Human NPC: ${character.isHumanNPC}`);
+        // console.log(`  - Incoming Damage: ${damage}`);
+        // console.log(`  - Weapon Damage Modifier: ${weaponDmgModifier}`);
         
         // Check if character has armor
         const armorSlot = character._loadout && character._loadout[38];
-        if (armorSlot) {
-          console.log(`  - Has Armor: YES (ID: ${armorSlot.itemDefinitionId}, Durability: ${armorSlot.currentDurability})`);
-        } else {
-          console.log(`  - Has Armor: NO`);
-        }
+        // COMMENTED OUT: Debug logging
+        // if (armorSlot) {
+        //   console.log(`  - Has Armor: YES (ID: ${armorSlot.itemDefinitionId}, Durability: ${armorSlot.currentDurability})`);
+        // } else {
+        //   console.log(`  - Has Armor: NO`);
+        // }
         
         // Call the original function
         const result = server._originalApplyArmorDamageReduction(character, damage, weaponDmgModifier);
         
-        console.log(`  - Reduced Damage: ${result}`);
+        // COMMENTED OUT: Debug logging
+        // console.log(`  - Reduced Damage: ${result}`);
         
         // Check armor durability after damage
-        if (armorSlot) {
-          console.log(`  - Armor Durability After: ${armorSlot.currentDurability}`);
-        }
+        // COMMENTED OUT: Debug logging
+        // if (armorSlot) {
+        //   console.log(`  - Armor Durability After: ${armorSlot.currentDurability}`);
+        // }
         
         return result;
       };
@@ -138,29 +145,33 @@ class ArmorDamageSystem {
       server._originalApplyHelmetDamageReduction = server.applyHelmetDamageReduction.bind(server);
       
       server.applyHelmetDamageReduction = function(character, damage, weaponDmgModifier = 1) {
-        console.log(`[ArmorDamageSystem] APPLY_HELMET_DAMAGE_REDUCTION_DEBUG:`);
-        console.log(`  - Character ID: ${character.characterId}`);
-        console.log(`  - Is Human NPC: ${character.isHumanNPC}`);
-        console.log(`  - Incoming Damage: ${damage}`);
-        console.log(`  - Weapon Damage Modifier: ${weaponDmgModifier}`);
+        // COMMENTED OUT: Debug logging
+        // console.log(`[ArmorDamageSystem] APPLY_HELMET_DAMAGE_REDUCTION_DEBUG:`);
+        // console.log(`  - Character ID: ${character.characterId}`);
+        // console.log(`  - Is Human NPC: ${character.isHumanNPC}`);
+        // console.log(`  - Incoming Damage: ${damage}`);
+        // console.log(`  - Weapon Damage Modifier: ${weaponDmgModifier}`);
         
         // Check if character has helmet
         const helmetSlot = character._loadout && character._loadout[11];
-        if (helmetSlot) {
-          console.log(`  - Has Helmet: YES (ID: ${helmetSlot.itemDefinitionId}, Durability: ${helmetSlot.currentDurability})`);
-        } else {
-          console.log(`  - Has Helmet: NO`);
-        }
+        // COMMENTED OUT: Debug logging
+        // if (helmetSlot) {
+        //   console.log(`  - Has Helmet: YES (ID: ${helmetSlot.itemDefinitionId}, Durability: ${helmetSlot.currentDurability})`);
+        // } else {
+        //   console.log(`  - Has Helmet: NO`);
+        // }
         
         // Call the original function
         const result = server._originalApplyHelmetDamageReduction(character, damage, weaponDmgModifier);
         
-        console.log(`  - Reduced Damage: ${result}`);
+        // COMMENTED OUT: Debug logging
+        // console.log(`  - Reduced Damage: ${result}`);
         
         // Check helmet durability after damage
-        if (helmetSlot) {
-          console.log(`  - Helmet Durability After: ${helmetSlot.currentDurability}`);
-        }
+        // COMMENTED OUT: Debug logging
+        // if (helmetSlot) {
+        //   console.log(`  - Helmet Durability After: ${helmetSlot.currentDurability}`);
+        // }
         
         return result;
       };
@@ -362,13 +373,13 @@ class ArmorDamageSystem {
       const correctedHasHelmetBefore = shouldShowHelmetProtection ? hasHelmetBefore : false;
       const correctedHasArmorBefore = shouldShowArmorProtection ? hasArmorBefore : false;
       
-      // Log the correction for debugging
-      if (!shouldShowArmorProtection && hasArmor) {
-        console.log(`[${server.destroMOD?.name || 'destroMOD'}] [HITMARKER_FIX] Suppressed armor sound for ${hitLocation} hit`);
-      }
-      if (!shouldShowHelmetProtection && hasHelmet) {
-        console.log(`[${server.destroMOD?.name || 'destroMOD'}] [HITMARKER_FIX] Suppressed helmet sound for ${hitLocation} hit`);
-      }
+      // COMMENTED OUT: Debug logging
+      // if (!shouldShowArmorProtection && hasArmor) {
+      //   console.log(`[${server.destroMOD?.name || 'destroMOD'}] [HITMARKER_FIX] Suppressed armor sound for ${hitLocation} hit`);
+      // }
+      // if (!shouldShowHelmetProtection && hasHelmet) {
+      //   console.log(`[${server.destroMOD?.name || 'destroMOD'}] [HITMARKER_FIX] Suppressed helmet sound for ${hitLocation} hit`);
+      // }
       
       // Call the original function with corrected parameters
       return originalSendHitmarker(
@@ -384,7 +395,5 @@ class ArmorDamageSystem {
     console.log(`[${this.name}] Hitmarker system patched - armor sounds will only play for spine hits`);
   }
 }
-
-
 
 module.exports = ArmorDamageSystem;

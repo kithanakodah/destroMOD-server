@@ -10,8 +10,8 @@ const { MeleeTypes } = require(path.join(serverModulePath, 'out/servers/ZoneServ
 class ZombieAI {
     constructor(plugin) {
         this.plugin = plugin;
-        this.debugMode = false; // REDUCED: Disable debug spam
-        this.zombieCount = 0; // Track zombie count for summary logging
+        this.debugMode = false;
+        this.zombieCount = 0;
     }
 
     startup(server) {
@@ -19,12 +19,12 @@ class ZombieAI {
         const aiManager = server.aiManager;
         if (!aiManager) return console.error(`[${this.plugin.name}] FATAL: Could not find AIManager.`);
 
-        // FIXED: Don't overwrite human AI setup - cooperate with it
         if (!aiManager.npcEntities) {
             aiManager.npcEntities = new Set();
         }
         
-        // FIXED: Don't overwrite addEntity if human AI already set it up
+        // This patch is now centrally handled in humanAI.js to avoid race conditions.
+        // If humanAI hasn't loaded, this will set up a basic version.
         if (!aiManager.originalAddEntity) {
             console.log(`[${this.plugin.name}] Setting up zombie AI addEntity (human AI not loaded yet)`);
             
@@ -33,9 +33,7 @@ class ZombieAI {
             
             aiManager.addEntity = (entity) => {
                 if (entity instanceof Npc) {
-                    // REDUCED: Only log summary, not every single zombie
                     if (entity.isHumanNPC !== true) {
-                        // This is a ZOMBIE NPC
                         aiManager.npcEntities.add(entity);
                         
                         entity.personalAttackRadius = this.plugin.ATTACK_RADIUS_MIN + Math.random() * (this.plugin.ATTACK_RADIUS_MAX - this.plugin.ATTACK_RADIUS_MIN);
@@ -45,12 +43,9 @@ class ZombieAI {
                         entity.aiType = 'ZOMBIE';
                         this.zombieCount++;
                         
-                        // REDUCED: Only log every 25th zombie to reduce spam
-                        if (this.zombieCount % 25 === 0) {
+                        if (this.zombieCount % 50 === 0) {
                             console.log(`[${this.plugin.name}] Configured ${this.zombieCount} zombie NPCs...`);
                         }
-                    } else {
-                        // REDUCED: Don't spam about human NPCs here
                     }
                 }
                 originalAddEntity(entity);
@@ -61,92 +56,23 @@ class ZombieAI {
         
         console.log(`[${this.plugin.name}] Zombie AI addEntity setup complete.`);
 
-        // FIXED: Don't overwrite damage if human AI already patched it
-        this.patchNpcDamage(server);
+        // REMOVED: The Npc.prototype.damage patch is now applied centrally in humanAI.js
+        // to handle both humans and zombies in one place and prevent errors.
 
-        // FIXED: Don't overwrite run if human AI already set it up
-        if (!aiManager.originalRun) {
-            console.log(`[${this.plugin.name}] Setting up zombie AI run method (human AI not loaded yet)`);
-            
-            const originalRun = aiManager.run.bind(aiManager);
-            aiManager.originalRun = originalRun;
-            
-            aiManager.run = () => {
-                originalRun();
-                this.runAiTick(aiManager);
-            };
-        } else {
+        // This ensures the zombie AI tick is called from the central run loop in humanAI.js
+        if (aiManager.originalRun) {
             console.log(`[${this.plugin.name}] Human AI already set up run method, zombie AI will be called from there`);
         }
         
-        // REDUCED: Log final zombie count summary
         setTimeout(() => {
             console.log(`[${this.plugin.name}] Zombie AI fully active with ${this.zombieCount} zombie NPCs configured.`);
         }, 2000);
     }
 
-    patchNpcDamage(server) {
-        const plugin = this.plugin;
-        const zombieAI = this;
-        
-        // FIXED: Don't double-patch if human AI already did it
-        if (Npc.prototype.originalDamage) {
-            console.log(`[${plugin.name}] Damage already patched by human AI, zombie AI will use existing patch`);
-            return;
-        }
-        
-        console.log(`[${plugin.name}] Patching damage for zombie AI`);
-        
-        const originalDamage = Npc.prototype.damage;
-        Npc.prototype.originalDamage = originalDamage;
-
-        Npc.prototype.damage = async function(server, damageInfo) {
-            let wasJustEnraged = false;
-            let client = server.getClientByCharId(damageInfo.entity);
-            if (!client) {
-                const sourceEntity = server.getEntity(damageInfo.entity);
-                if (sourceEntity instanceof ProjectileEntity) {
-                    client = server.getClientByCharId(sourceEntity.managerCharacterId);
-                }
-            }
-
-            if (client) {
-                if (this.isHumanNPC !== true) {
-                    // ZOMBIE NPC damage handling - REDUCED: Less spam
-                    if (this.personalAggroRadius < plugin.ENRAGED_AGGRO_RADIUS) {
-                        // Only log the first few enrages to reduce spam
-                        if (!zombieAI.hasLoggedEnrage || zombieAI.hasLoggedEnrage < 3) {
-                            console.log(`[${plugin.name}] Zombie NPC ${this.characterId} enraged! Old aggro: ${this.personalAggroRadius.toFixed(1)} -> New: ${plugin.ENRAGED_AGGRO_RADIUS}`);
-                            zombieAI.hasLoggedEnrage = (zombieAI.hasLoggedEnrage || 0) + 1;
-                        }
-                        this.personalAggroRadius = plugin.ENRAGED_AGGRO_RADIUS;
-                        wasJustEnraged = true;
-                    }
-                } else {
-                    // REDUCED: Don't spam about humans here
-                }
-            }
-            
-            // Call the original damage function first
-            const result = await originalDamage.apply(this, arguments);
-
-            // If the zombie was just enraged by the damage, it "shouts" for help
-            if (wasJustEnraged && this.isHumanNPC !== true) {
-                zombieAI.alertNearbyZombies(this, server);
-            }
-
-            return result;
-        };
-
-        console.log(`[${plugin.name}] Patched Npc.damage to handle zombie aggro and alerts.`);
-    }
-
-    // --- ALERT FUNCTION FOR ZOMBIES (REDUCED SPAM) ---
     alertNearbyZombies(enragedZombie, server) {
         const aiManager = server.aiManager;
         const plugin = this.plugin;
 
-        // REDUCED: Only log first few alerts to reduce spam
         if (!this.hasLoggedAlert || this.hasLoggedAlert < 3) {
             console.log(`[${plugin.name}] Enraged zombie ${enragedZombie.characterId} is alerting other zombies within ${plugin.ALERT_RADIUS} units.`);
             this.hasLoggedAlert = (this.hasLoggedAlert || 0) + 1;
@@ -155,18 +81,15 @@ class ZombieAI {
         if (aiManager.npcEntities) {
             let alertedCount = 0;
             aiManager.npcEntities.forEach((otherNpc) => {
-                // Ensure the other NPC is not itself and is currently alive and is a zombie
                 if (otherNpc.characterId === enragedZombie.characterId || !otherNpc.isAlive || otherNpc.isHumanNPC === true) {
                     return;
                 }
 
                 const distance = getDistance(enragedZombie.state.position, otherNpc.state.position);
 
-                // If the other NPC is within the alert radius...
                 if (distance <= plugin.ALERT_RADIUS) {
                     const newAggroRadius = plugin.ALERTED_AGGRO_RADIUS_MIN + Math.random() * (plugin.ALERTED_AGGRO_RADIUS_MAX - plugin.ALERTED_AGGRO_RADIUS_MIN);
                     
-                    // Only increase the aggro radius. Never decrease it.
                     if (otherNpc.personalAggroRadius < newAggroRadius) {
                         otherNpc.personalAggroRadius = newAggroRadius;
                         alertedCount++;
@@ -174,7 +97,6 @@ class ZombieAI {
                 }
             });
             
-            // REDUCED: Only log alert summary occasionally
             if (alertedCount > 0 && (!this.hasLoggedAlertSummary || this.hasLoggedAlertSummary < 2)) {
                 console.log(`[${plugin.name}] Zombie ${enragedZombie.characterId} alerted ${alertedCount} nearby zombies`);
                 this.hasLoggedAlertSummary = (this.hasLoggedAlertSummary || 0) + 1;
@@ -185,15 +107,14 @@ class ZombieAI {
     runAiTick(aiManager) {
         if (!aiManager.npcEntities) return;
         
-        // REDUCED: No debug spam for zombie processing
+        const activeAgents = this.plugin.pathfinding.agents;
+        if (!activeAgents) return;
+
         aiManager.npcEntities.forEach((npc) => {
+            if (!activeAgents.has(npc.characterId)) return;
+
             try {
-                if (!npc || !npc.state) { return; }
-                
-                // FIXED: Skip human NPCs - they're handled by human AI
-                if (npc.isHumanNPC === true) {
-                    return;
-                }
+                if (!npc || !npc.state || npc.isHumanNPC === true) return;
                 
                 if (npc.aiState === undefined) npc.aiState = 'IDLE';
                 if (!npc.isAlive) {
@@ -209,7 +130,6 @@ class ZombieAI {
                 }
                 this.executeContinuousAction(npc, closestPlayer);
             } catch (e) {
-                // REDUCED: Only log errors if debug mode is on
                 if (this.debugMode) {
                     console.error(`[${this.plugin.name}] Zombie AI tick failed for NPC ${npc.characterId || 'UNKNOWN'}:`, e);
                 }
@@ -221,7 +141,6 @@ class ZombieAI {
         const oldState = npc.aiState || 'IDLE';
         if (oldState === newState) return;
         
-        // REDUCED: Don't log every state change for zombies
         npc.aiState = newState;
         
         switch (newState) {
@@ -248,18 +167,20 @@ class ZombieAI {
     }
 
     executeMovement(npc, target) {
-        const moveSpeed = npc.personalMoveSpeed || this.plugin.MOVE_SPEED_MIN;
-        const moveDistance = moveSpeed * 0.05;
-        const dirX = target.state.position[0] - npc.state.position[0];
-        const dirZ = target.state.position[2] - npc.state.position[2];
-        const length = Math.sqrt(dirX * dirX + dirZ * dirZ);
-        if (length < 0.1) return;
-        const normX = dirX / length;
-        const normZ = dirZ / length;
-        npc.state.position[0] += normX * moveDistance;
-        npc.state.position[2] += normZ * moveDistance;
-        const orientation = Math.atan2(normX, normZ);
-        this.sendMovementPacket(npc, orientation, moveSpeed);
+        if (!target) {
+            this.executeStop(npc);
+            return;
+        }
+
+        if (this.plugin.pathfinding && this.plugin.pathfinding.isReady) {
+            if (this.plugin.pathfinding.agents.has(npc.characterId)) {
+                const now = Date.now();
+                if (!npc.lastPathfindTime || now - npc.lastPathfindTime > 1000) {
+                    npc.lastPathfindTime = now;
+                    this.plugin.pathfinding.setNPCTarget(npc.characterId, target.state.position);
+                }
+            }
+        }
     }
 
     tryAttack(npc, target) {
@@ -289,7 +210,6 @@ class ZombieAI {
                     }
                 });
                 
-                // REDUCED: Only log first few attacks to reduce spam
                 if (!this.hasLoggedAttack || this.hasLoggedAttack < 3) {
                     console.log(`[${this.plugin.name}] Zombie ${npc.characterId} attacked ${target.characterId} for ${npc.npcMeleeDamage} damage`);
                     this.hasLoggedAttack = (this.hasLoggedAttack || 0) + 1;
@@ -299,6 +219,11 @@ class ZombieAI {
     }
 
     executeStop(npc) {
+        if (this.plugin.pathfinding && this.plugin.pathfinding.isReady) {
+            if (this.plugin.pathfinding.agents.has(npc.characterId)) {
+                this.plugin.pathfinding.stopNPC(npc.characterId);
+            }
+        }
         if (npc.lastSentSpeed !== 0) { 
             this.sendMovementPacket(npc, npc.state.orientation, 0); 
         }
@@ -332,20 +257,35 @@ class ZombieAI {
         this.sendMovementPacket(npc, orientation, 0);
     }
 
-    findClosestPlayer(npc, aiManager) {
-        const aggroRadius = npc.personalAggroRadius || this.plugin.AGGRO_RADIUS_MAX;
-        let closestPlayer = null;
-        let minDistance = aggroRadius;
-        aiManager.playerEntities.forEach((player) => {
-            if (!player.isAlive) return;
-            const distance = getDistance(npc.state.position, player.state.position);
-            if (distance <= minDistance) {
-                minDistance = distance;
-                closestPlayer = player;
+    // In humanAI.js and zombieAI.js, update findClosestPlayer:
+findClosestPlayer(npc, aiManager) {
+    const aggroRadius = npc.personalAggroRadius || this.plugin.AGGRO_RADIUS_MAX;
+    let closestPlayer = null;
+    let minDistance = aggroRadius;
+    const now = Date.now();
+    
+    aiManager.playerEntities.forEach((player) => {
+        if (!player.isAlive) return;
+        
+        // Quick grace period check
+        if (player.gameReadyTime && now - player.gameReadyTime < 10000) return;
+        
+        const distance = getDistance(npc.state.position, player.state.position);
+        if (distance <= minDistance) {
+            // Check line of sight before considering this player
+            if (this.plugin.pathfinding && this.plugin.pathfinding.hasLineOfSight) {
+                const hasLOS = this.plugin.pathfinding.hasLineOfSight(npc.state.position, player.state.position);
+                if (!hasLOS) {
+                    return; // Skip this player - no line of sight
+                }
             }
-        });
-        return closestPlayer;
-    }
+            
+            minDistance = distance;
+            closestPlayer = player;
+        }
+    });
+    return closestPlayer;
+}
 
     determineState(npc, player) {
         if (!player) return 'IDLE';
