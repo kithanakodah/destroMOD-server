@@ -83,7 +83,7 @@ public:
         const float end[3] = {endX, endY, endZ};
         dtPolyRef startRef;
         float startPt[3];
-        float extents[3] = {2.0f, 4.0f, 2.0f};
+        float extents[3] = {20.0f, 10.0f, 20.0f};
         
         dtStatus status = navQuery->findNearestPoly(start, extents, &dtQueryFilter(), &startRef, startPt);
         if (dtStatusFailed(status) || !startRef) return true;
@@ -99,24 +99,27 @@ public:
     }
 
     bool setNPCTarget(const std::string& npcId, float targetX, float targetY, float targetZ) {
-        auto it = agentMap.find(npcId);
-        if (it == agentMap.end()) return false;
-        
-        int agentIndex = it->second;
-        const dtCrowdAgent* agent = crowd->getAgent(agentIndex);
-        if (!agent || !agent->active) return false;
+    auto it = agentMap.find(npcId);
+    if (it == agentMap.end()) return false;
+    
+    int agentIndex = it->second;
+    const dtCrowdAgent* agent = crowd->getAgent(agentIndex);
+    if (!agent || !agent->active) return false;
 
-        const float targetPos[3] = {targetX, targetY, targetZ};
-        dtPolyRef targetRef;
-        float nearestPt[3];
-        const float extents[3] = {2.0f, 4.0f, 2.0f};
-        
-        dtStatus status = navQuery->findNearestPoly(targetPos, extents, &dtQueryFilter(), &targetRef, nearestPt);
-        if (dtStatusSucceed(status) && targetRef) {
-            return dtStatusSucceed(crowd->requestMoveTarget(agentIndex, targetRef, nearestPt));
-        }
-        return false;
+    // CRITICAL FIX: Reset the current move target first
+    crowd->resetMoveTarget(agentIndex);
+    
+    const float targetPos[3] = {targetX, targetY, targetZ};
+    dtPolyRef targetRef;
+    float nearestPt[3];
+    const float extents[3] = {20.0f, 10.0f, 20.0f};
+    
+    dtStatus status = navQuery->findNearestPoly(targetPos, extents, &dtQueryFilter(), &targetRef, nearestPt);
+    if (dtStatusSucceed(status) && targetRef) {
+        return dtStatusSucceed(crowd->requestMoveTarget(agentIndex, targetRef, nearestPt));
     }
+    return false;
+}
     
     // ENHANCED: Original stopNPC with immediate velocity zeroing
     bool stopNPC(const std::string& npcId) {
@@ -345,13 +348,13 @@ private:
                 const unsigned char* nextTile = d + 8;
                 while (nextTile < end - 4 && *reinterpret_cast<const int*>(nextTile) != 0x444E4156) nextTile++;
                 size_t tileSize = (nextTile >= end - 4) ? (end - tileStart) : (nextTile - tileStart);
-                unsigned char* tileData = new unsigned char[tileSize];
+                unsigned char* tileData = (unsigned char*)dtAlloc(tileSize, DT_ALLOC_PERM);
                 memcpy(tileData, tileStart, tileSize);
                 if (dtStatusSucceed(navMesh->addTile(tileData, (int)tileSize, DT_TILE_FREE_DATA, 0, nullptr))) {
-                    tilesLoaded++;
+                tilesLoaded++;
                 } else {
-                    delete[] tileData;
-                }
+                dtFree(tileData);  // Use dtFree instead of delete[]
+}
                 d = nextTile;
             } else {
                 d++;
@@ -554,7 +557,7 @@ void runHttpServer(PathfindingService& service, int port = 8080) {
 
 int main() {
     PathfindingService service;
-    if (!service.initialize("all_tiles_navmesh_v9_64bit.bin")) {
+    if (!service.initialize("all_tiles_navmesh_v10_64bit.bin")) {
         std::cerr << "Failed to initialize enhanced pathfinding service. Make sure the navmesh file is present." << std::endl;
         std::cout << "Press Enter to exit..." << std::endl;
         std::cin.get();
@@ -564,7 +567,7 @@ int main() {
     std::thread updateThread([&service]() {
         while (true) {
             service.update(0.025f);
-            std::this_thread::sleep_for(std::chrono::milliseconds(25));
+            std::this_thread::sleep_for(std::chrono::milliseconds(33));
         }
     });
     

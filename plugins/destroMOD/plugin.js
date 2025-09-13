@@ -11,9 +11,12 @@ const HumanShoot = require('./humanShoot.js');
 const PathfindingManager = require('./pathfinding.js');
 const DebugCommands = require('./debugCommands.js');
 
+const serverModulePath = path.join(process.cwd(), 'node_modules/h1z1-server');
+const { Npc } = require(path.join(serverModulePath, 'out/servers/ZoneServer2016/entities/npc'));
+
 class DestroMOD_AI_Plugin {
   name = "destroMOD";
-  
+  lastUpdateTime = 0;
   attackCooldowns = new Map();
   shootCooldowns = new Map();
   config = {};
@@ -27,8 +30,8 @@ class DestroMOD_AI_Plugin {
   ENRAGED_AGGRO_RADIUS = 75.0;
   ATTACK_RADIUS_MIN = 1.5;
   ATTACK_RADIUS_MAX = 1.8;
-  MOVE_SPEED_MIN = 8.5;
-  MOVE_SPEED_MAX = 8.5;
+  // MOVE_SPEED_MIN = 8.5; no longer used
+  // MOVE_SPEED_MAX = 8.5; no longer used
   MAX_VERTICAL_AGGRO_DISTANCE = 10.5;
 
   // --- ALERT MECHANIC ---
@@ -46,6 +49,7 @@ class DestroMOD_AI_Plugin {
   SHOOT_COOLDOWN_MAX_MS = 4000;
 
   constructor() {
+    
     this.zombieAI = new ZombieAI(this);
     this.humanAI = new HumanAI(this);
     this.armorDamage = new ArmorDamageSystem(this);
@@ -122,6 +126,61 @@ class DestroMOD_AI_Plugin {
 
     server.destroMOD = this;
 
+        // ADD THE POSITION LOGGING CODE HERE:
+    const originalSendData = server.sendData?.bind(server);
+    if (originalSendData) {
+        server.sendData = function(client, packetType, packet) {
+            // Log outgoing position updates
+            if (packetType === "PlayerUpdatePosition" && packet.transientId) {
+                console.log(`[POS_OUT] Sending position update for ${packet.transientId}`);
+            }
+            return originalSendData(client, packetType, packet);
+        };
+    }
+
+    // Also intercept incoming position data
+    const originalOnClientData = server.onClientData?.bind(server);
+if (originalOnClientData) {
+    server.onClientData = function(client, packetType, packet) {
+        if (packetType === "PlayerUpdatePosition" && client.character) {
+            const pos = packet.positionUpdate?.position;
+            if (pos && Array.isArray(pos) && pos.length >= 3) {
+                // Force immediate position update, bypass any throttling
+                client.character.state.position[0] = pos[0];
+                client.character.state.position[1] = pos[1];
+                client.character.state.position[2] = pos[2];
+                client.character.lastPositionUpdate = Date.now();
+                
+                // Also update orientation if available
+                if (packet.positionUpdate.orientation !== undefined) {
+                    client.character.state.orientation = packet.positionUpdate.orientation;
+                }
+            }
+        }
+        return originalOnClientData(client, packetType, packet);
+    };
+}
+
+    const originalPlayAnimation = Npc.prototype.playAnimation;
+Npc.prototype.playAnimation = function(animationName) {
+    // Only check for zombie models
+    if (this.actorModelId === 9510 || this.actorModelId === 9634) {
+        if (animationName === "Run") {
+            // Log ONLY when we are actually changing the animation name
+            console.log(`[ANIM_OVERRIDE] Translating 'Run' to 'Zombie001_11_Run' for NPC ${this.characterId}`);
+            return originalPlayAnimation.call(this, "Zombie001_11_Run");
+        }
+        if (animationName === "walk") {
+            // Log ONLY when we are actually changing the animation name
+            console.log(`[ANIM_OVERRIDE] Translating 'walk' to 'Zombie001_11_Walk' for NPC ${this.characterId}`);
+            return originalPlayAnimation.call(this, "Zombie001_11_Walk");
+        }
+    }
+    
+    // For all other cases (like "Idle" or non-zombie NPCs), just call the original function silently.
+    return originalPlayAnimation.call(this, animationName);
+};
+
     this.patchNPCDeathSystem(server);
     this.patchVisualEquipmentRemoval(server);
 
@@ -136,17 +195,31 @@ class DestroMOD_AI_Plugin {
         console.log(`[${this.name}] 🗺️ AGGRO-BASED pathfinding is now available!`);
         console.log(`[${this.name}] 📊 Only aggroed NPCs will use crowd simulation (capacity: 50 agents)`);
         
-        setInterval(() => {
-    if (this.pathfinding) {
-        this.pathfinding.update(0.025);
-    }
-    if (this.debugCommands) {
-        this.debugCommands.update(); // This will update the visualizer
-    }
-}, 50);
-        console.log(`[${this.name}] Crowd simulation loop started (20Hz) for aggroed NPCs only.`);
+        // Initialize the last update time for dynamic deltaTime calculation
+        this.lastUpdateTime = Date.now();
 
-        // REMOVED: No more bubble management - aggro-based system handles it automatically
+        setInterval(() => {
+            const now = Date.now();
+            // Calculate the actual time passed in seconds
+            const deltaTime = (now - this.lastUpdateTime) / 1000.0;
+            this.lastUpdateTime = now;
+
+            if (this.pathfinding) {
+                // Pass the dynamic deltaTime to the pathfinding update
+                this.pathfinding.update(deltaTime);
+                
+                // Run AI tick immediately after pathfinding update
+                if (server && server.aiManager) {
+                    this.zombieAI.runAiTick(server.aiManager);
+                    this.humanAI.runHumanAiTick(server.aiManager);
+                }
+            }
+            if (this.debugCommands) {
+                this.debugCommands.update(); // This will update the visualizer
+            }
+        }, 33); // Run the loop at the optimal ~30 Hz (1000ms / 33ms)
+
+        console.log(`[${this.name}] Crowd simulation and AI loop started (~30Hz) for aggroed NPCs only.`);
 
     } else {
         console.log(`[${this.name}] ⚠️ Pathfinding unavailable - NPCs will use basic movement`);
@@ -488,7 +561,7 @@ class DestroMOD_AI_Plugin {
           itemGuid: weaponGuid,
           slotId: 1,
           stackCount: 1,
-          currentDurability: 1000,
+          currentDurability: 1500,
           containerGuid: "0xFFFFFFFFFFFFFFFF",
           loadoutItemOwnerGuid: humanNpc.characterId,
           weapon: weaponItem.weapon
@@ -976,10 +1049,10 @@ class DestroMOD_AI_Plugin {
       console.log(`[${this.name}] [HUMAN_LOOT] AK-47 destroyed or missing - not added to loot`);
     }
     
-    const ammo762Item = server.generateItem(2325, 30);
+    const ammo762Item = server.generateItem(2325, 300);
     if (ammo762Item) {
       server.addContainerItem(lootbag, ammo762Item, container);
-      console.log(`[${this.name}] [HUMAN_LOOT] Added 7.62mm Ammo x30`);
+      console.log(`[${this.name}] [HUMAN_LOOT] Added 7.62mm Ammo x300`);
     }
     
     const armorDurability = durabilityData[2271];
@@ -1007,10 +1080,10 @@ class DestroMOD_AI_Plugin {
     }
     
     if (Math.random() < 0.75) {
-      const ammo9mmItem = server.generateItem(1998, 20);
+      const ammo9mmItem = server.generateItem(1998, 200);
       if (ammo9mmItem) {
         server.addContainerItem(lootbag, ammo9mmItem, container);
-        console.log(`[${this.name}] [HUMAN_LOOT] Added 9mm Rounds x20`);
+        console.log(`[${this.name}] [HUMAN_LOOT] Added 9mm Rounds x200`);
       }
     }
     
@@ -1021,18 +1094,18 @@ class DestroMOD_AI_Plugin {
     }
     
     if (Math.random() < 0.60) {
-      const firstAidItem = server.generateItem(78, 1);
+      const firstAidItem = server.generateItem(78, 2);
       if (firstAidItem) {
         server.addContainerItem(lootbag, firstAidItem, container);
-        console.log(`[${this.name}] [HUMAN_LOOT] Added First Aid Kit`);
+        console.log(`[${this.name}] [HUMAN_LOOT] Added First Aid Kit x2`);
       }
     }
     
     if (Math.random() < 0.80) {
-      const bandageItem = server.generateItem(24, 3);
+      const bandageItem = server.generateItem(24, 10);
       if (bandageItem) {
         server.addContainerItem(lootbag, bandageItem, container);
-        console.log(`[${this.name}] [HUMAN_LOOT] Added Bandages x3`);
+        console.log(`[${this.name}] [HUMAN_LOOT] Added Bandages x10`);
       }
     }
     

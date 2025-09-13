@@ -424,25 +424,7 @@ async update(deltaTime) {
                 if (reachedTarget) {
                     console.log(`[${this.plugin.name}] NPC ${npcId} reached pathfinding target`);
                     await this.forceStopNPC(npcId);
-                    
-                    // Trigger state change if NPC should be attacking
-                    if (npc.aiState === 'CHASING') {
-                        const aiManager = this.server.aiManager;
-                        if (aiManager.playerEntities) {
-                            const closestPlayer = this.findClosestPlayerForNPC(npc, aiManager);
-                            if (closestPlayer) {
-                                const distance = this.getDistance(npc.state.position, closestPlayer.state.position);
-                                const attackRadius = npc.personalAttackRadius || 1.8;
-                                if (distance <= attackRadius) {
-                                    // Trigger attack state through AI system
-                                    if (npc.aiType === 'ZOMBIE') {
-                                        this.server.destroMOD.humanAI.changeZombieState(npc, 'ATTACKING');
-                                    }
-                                }
-                            }
-                        }
                     }
-                }
             }
 
             // Get agent position and velocity from C++ service
@@ -460,7 +442,8 @@ async update(deltaTime) {
             ]);
 
             const posResult = await posResponse.json();
-            const velResult = await velResponse.json();
+const velResult = await velResponse.json();
+
 
             if (posResult.success && posResult.position) {
                 // Update NPC position directly from crowd
@@ -468,22 +451,33 @@ async update(deltaTime) {
                 npc.state.position[1] = posResult.position[1];
                 npc.state.position[2] = posResult.position[2];
                 
-                // Calculate movement orientation and speed
                 let horizontalSpeed = 0;
+                let verticalSpeed = 0;
                 let orientation = npc.state.orientation;
                 
-                if (velResult.success && velResult.velocity) {
+                // --- THE CRITICAL FIX IS HERE ---
+                // Check the forceStopped flag BEFORE processing velocity.
+                if (agentData.forceStopped) {
+                    // If the AI has commanded a force stop, we IGNORE the C++ velocity
+                    // and send a zero-velocity packet to guarantee the client stops prediction.
+                    npc.velocity = { x: 0, y: 0, z: 0 };
+                    horizontalSpeed = 0;
+                    verticalSpeed = 0;
+                }
+                else if (velResult.success && velResult.velocity) {
                     const vel = velResult.velocity;
+                    npc.velocity = { x: vel[0], y: vel[1], z: vel[2] };
                     horizontalSpeed = Math.sqrt(vel[0] * vel[0] + vel[2] * vel[2]);
+                    verticalSpeed = vel[1];
                     if (horizontalSpeed > 0.1) {
                         orientation = Math.atan2(vel[0], vel[2]);
                     }
+                } else {
+                    npc.velocity = { x: 0, y: 0, z: 0 };
                 }
 
-                // Don't send movement if force stopped
-                if (!agentData.forceStopped) {
-                    this.sendMovementPacket(npc, orientation, horizontalSpeed);
-                }
+                // The packet is now always sent, but its speed will be zero if force stopped.
+                this.sendMovementPacket(npc, orientation, horizontalSpeed, verticalSpeed);
             }
         } catch (error) {
             console.warn(`[${this.plugin.name}] Error updating agent for NPC ${npcId}:`, error.message);
@@ -518,27 +512,27 @@ async update(deltaTime) {
         return Math.sqrt(dx * dx + dy * dy + dz * dz);
     }
     
-    sendMovementPacket(npc, orientation, speed) {
-        if (!this.server) return;
-        npc.lastSentSpeed = speed;
-        npc.state.orientation = orientation;
-        this.server.sendDataToAllWithSpawnedEntity(this.server._npcs, npc.characterId, "PlayerUpdatePosition", {
-            transientId: npc.transientId,
-            positionUpdate: {
-                sequenceTime: getCurrentServerTimeWrapper().getTruncatedU32(),
-                position: npc.state.position,
-                unknown3_int8: 0,
-                stance: 66565,
-                engineRPM: 0,
-                orientation: orientation,
-                frontTilt: 0,
-                sideTilt: 0,
-                angleChange: 0,
-                verticalSpeed: 0,
-                horizontalSpeed: speed
-            }
-        });
-    }
+    sendMovementPacket(npc, orientation, horizontalSpeed, verticalSpeed = 0) {
+    if (!this.server) return;
+    npc.lastSentSpeed = horizontalSpeed;
+    npc.state.orientation = orientation;
+    this.server.sendDataToAllWithSpawnedEntity(this.server._npcs, npc.characterId, "PlayerUpdatePosition", {
+        transientId: npc.transientId,
+        positionUpdate: {
+            sequenceTime: getCurrentServerTimeWrapper().getTruncatedU32(),
+            position: npc.state.position,
+            unknown3_int8: 0,
+            stance: 66565,
+            engineRPM: 0,
+            orientation: orientation,
+            frontTilt: 0,
+            sideTilt: 0,
+            angleChange: 0,
+            verticalSpeed: verticalSpeed,      // <-- USE THE VALUE
+            horizontalSpeed: horizontalSpeed
+        }
+    });
+}
 
     getStats() {
         return {

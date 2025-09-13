@@ -47,6 +47,7 @@ class HumanAI {
         };
         
         this.patchNpcDamage(server);
+         this.patchNpcSerialization(server);
 
         aiManager.run = () => {
             aiManager.originalRun();
@@ -58,6 +59,42 @@ class HumanAI {
     assignRandomWeapon() {
         const weapons = [ Items.WEAPON_AR15, Items.WEAPON_AK47 ];
         return weapons[Math.floor(Math.random() * weapons.length)];
+    }
+    patchNpcSerialization(server) {
+        console.log(`[${this.plugin.name}] Patching NPC serialization to use PC animation system...`);
+
+        // This is the function we are replacing
+        const originalOnFullCharacterDataRequest = Npc.prototype.OnFullCharacterDataRequest;
+
+        // Overwrite the original function with our new one
+        Npc.prototype.OnFullCharacterDataRequest = function(server, client) {
+            // NOTE: 'this' inside this function correctly refers to the NPC instance.
+
+            // Send the "LightweightToFullPc" packet to trick the client
+            // into using its advanced, velocity-driven animation system.
+            server.sendData(client, "LightweightToFullPc", {
+                useCompression: false,
+                fullPcData: {
+                    transientId: this.transientId,
+                    attachmentData: [],
+                    headActor: this.headActor, // Make sure your NPC class has this property
+                    resources: { data: this.pGetResources() },
+                    remoteWeapons: { data: [] }
+                },
+                positionUpdate: {
+                    sequenceTime: 0,
+                    position: this.state.position
+                },
+                stats: [],
+                remoteWeaponsExtra: []
+            });
+            
+            // Handle the one-time callback
+            if (this.onReadyCallback) {
+                this.onReadyCallback(client);
+                delete this.onReadyCallback;
+            }
+        };
     }
 
     patchNpcDamage(server) {
@@ -195,9 +232,13 @@ class HumanAI {
         });
     }
 
+    // New, cleaner version
     changeHumanState(npc, newState) {
         if (npc.aiState === newState) return;
+
+        console.log(`[AI-STATE] Human NPC ${npc.characterId} state change: ${npc.aiState || 'UNDEFINED'} -> ${newState}`);
         npc.aiState = newState;
+        
         switch (newState) {
             case 'IDLE': this.executeStop(npc); npc.playAnimation("Idle"); break;
             case 'SHOOTING': this.executeStop(npc); npc.playAnimation("Combat_Rifle_Aim"); break;
@@ -207,17 +248,19 @@ class HumanAI {
 
     changeZombieState(npc, newState) {
         if (npc.aiState === newState) return;
+
+        console.log(`[AI-STATE] Zombie NPC ${npc.characterId} state change: ${npc.aiState || 'UNDEFINED'} -> ${newState}`);
         npc.aiState = newState;
+        
         switch (newState) {
             case 'IDLE': 
                 this.executeStop(npc); 
-                npc.playAnimation("Idle");
                 break;
             case 'ATTACKING': 
-                this.executeStop(npc, true); // allow slow following when attacking
+                this.plugin.pathfinding.forceStopNPC(npc.characterId);
                 break;
             case 'CHASING': 
-                npc.playAnimation("walk");
+                // No specific action needed, movement is handled by the continuous action loop
                 break;
         }
     }
@@ -246,7 +289,7 @@ class HumanAI {
         
         if (this.plugin.pathfinding.isReady && npc.wasAggroed) {
             const now = Date.now();
-            if (!npc.lastPathfindTime || now - npc.lastPathfindTime > 25) { // changed to 25ms 
+            if (!npc.lastPathfindTime || now - npc.lastPathfindTime > 100) { // changed to 200ms, may need to lower a bit
                 npc.lastPathfindTime = now;
                 this.plugin.pathfinding.setNPCTarget(npc.characterId, target.state.position);
             }
@@ -261,35 +304,163 @@ class HumanAI {
         const dirZ = target.state.position[2] - npc.state.position[2];
         const orientation = Math.atan2(dirX, dirZ);
         npc.lastFaceUpdate = now;
-        this.sendMovementPacket(npc, orientation, npc.lastSentSpeed || 0);
+        this.sendMovementPacket(npc, orientation, npc.lastSentSpeed || 0, 0);
     }
 
     tryAttack(npc, target) {
-        const now = Date.now();
-        const canAttackAt = this.plugin.attackCooldowns.get(npc.characterId) || 0;
-        if (now < canAttackAt) return;
+    const now = Date.now();
+    const canAttackAt = this.plugin.attackCooldowns.get(npc.characterId) || 0;
+    if (now < canAttackAt) return;
 
-        const attackRadius = npc.personalAttackRadius || this.plugin.ATTACK_RADIUS_MAX;
-        if (getDistance(npc.state.position, target.state.position) > attackRadius) {
-            // Important: Do not attack if player moved out of range.
-            // The AI will switch back to CHASING on the next tick automatically.
-            return;
-        }
+    // === COMPREHENSIVE DEBUG LOGGING ===
+    console.log(`\n[ATTACK_DEBUG] ==================== NPC ${npc.characterId} Attack Attempt ====================`);
+    console.log(`[ATTACK_DEBUG] Timestamp: ${new Date(now).toISOString()}`);
+    console.log(`[ATTACK_DEBUG] NPC Position: [${npc.state.position[0].toFixed(3)}, ${npc.state.position[1].toFixed(3)}, ${npc.state.position[2].toFixed(3)}]`);
+    console.log(`[ATTACK_DEBUG] NPC AI State: ${npc.aiState}`);
+    console.log(`[ATTACK_DEBUG] NPC wasAggroed: ${npc.wasAggroed}`);
+    console.log(`[ATTACK_DEBUG] NPC in pathfinding crowd: ${this.plugin.pathfinding?.agents?.has(npc.characterId) || false}`);
 
-        const randomCooldown = randomIntFromInterval(this.plugin.ATTACK_COOLDOWN_MIN_MS, this.plugin.ATTACK_COOLDOWN_MAX_MS);
-        this.plugin.attackCooldowns.set(npc.characterId, now + randomCooldown);
-        this.faceTarget(npc, target);
-        npc.playAnimation("GrappleTell");
+    // Debug the target parameter (potentially stale)
+    if (target && target.state && target.state.position) {
+        console.log(`[ATTACK_DEBUG] Target param position: [${target.state.position[0].toFixed(3)}, ${target.state.position[1].toFixed(3)}, ${target.state.position[2].toFixed(3)}]`);
+        console.log(`[ATTACK_DEBUG] Target characterId: ${target.characterId}`);
         
-        const client = npc.server.getClientByCharId(target.characterId);
-        if (client) {
-            const { MeleeTypes } = require(path.join(serverModulePath, 'out/servers/ZoneServer2016/models/enums'));
-            client.character.OnMeleeHit(npc.server, {
-                entity: npc.characterId, weapon: 0, damage: npc.npcMeleeDamage, causeBleed: false, meleeType: MeleeTypes.FISTS,
-                hitReport: { characterId: target.characterId, position: target.state.position }
-            });
-        }
+        const distanceToTargetParam = getDistance(npc.state.position, target.state.position);
+        console.log(`[ATTACK_DEBUG] Distance to target param: ${distanceToTargetParam.toFixed(3)}`);
+    } else {
+        console.log(`[ATTACK_DEBUG] ERROR: Invalid target parameter:`, target);
+        return;
     }
+
+    // Get fresh client and position data
+    const client = npc.server.getClientByCharId(target.characterId);
+    if (!client) {
+        console.log(`[ATTACK_DEBUG] ERROR: Could not find client for characterId ${target.characterId}`);
+        return;
+    }
+
+    if (!client.character || !client.character.state || !client.character.state.position) {
+        console.log(`[ATTACK_DEBUG] ERROR: Client character has invalid state`);
+        return;
+    }
+
+    const freshPlayerPosition = client.character.state.position;
+    console.log(`[ATTACK_DEBUG] Fresh player position: [${freshPlayerPosition[0].toFixed(3)}, ${freshPlayerPosition[1].toFixed(3)}, ${freshPlayerPosition[2].toFixed(3)}]`);
+    
+    // Calculate position differences
+    const positionDrift = [
+        Math.abs(target.state.position[0] - freshPlayerPosition[0]),
+        Math.abs(target.state.position[1] - freshPlayerPosition[1]),
+        Math.abs(target.state.position[2] - freshPlayerPosition[2])
+    ];
+    const totalDrift = Math.sqrt(positionDrift[0] * positionDrift[0] + positionDrift[1] * positionDrift[1] + positionDrift[2] * positionDrift[2]);
+    
+    console.log(`[ATTACK_DEBUG] Position drift X: ${positionDrift[0].toFixed(3)}, Y: ${positionDrift[1].toFixed(3)}, Z: ${positionDrift[2].toFixed(3)}`);
+    console.log(`[ATTACK_DEBUG] Total position drift: ${totalDrift.toFixed(3)} units`);
+    
+    if (totalDrift > 2.0) {
+        console.log(`[ATTACK_DEBUG] ⚠️ WARNING: Significant position drift detected! Target param is ${totalDrift.toFixed(3)} units behind actual player position`);
+    }
+
+    // Distance calculations
+    const distanceToFreshPosition = getDistance(npc.state.position, freshPlayerPosition);
+    const distanceToTargetParam = getDistance(npc.state.position, target.state.position);
+    
+    console.log(`[ATTACK_DEBUG] Distance to fresh position: ${distanceToFreshPosition.toFixed(3)}`);
+    console.log(`[ATTACK_DEBUG] Distance to target param: ${distanceToTargetParam.toFixed(3)}`);
+    console.log(`[ATTACK_DEBUG] Distance difference: ${Math.abs(distanceToFreshPosition - distanceToTargetParam).toFixed(3)}`);
+
+    // Attack radius validation
+    const attackRadius = npc.personalAttackRadius || this.plugin.ATTACK_RADIUS_MAX;
+    const effectiveAttackRadius = attackRadius + 0.5; // Buffer for latency
+    
+    console.log(`[ATTACK_DEBUG] Personal attack radius: ${attackRadius.toFixed(3)}`);
+    console.log(`[ATTACK_DEBUG] Effective attack radius (with buffer): ${effectiveAttackRadius.toFixed(3)}`);
+
+    // Check both distances for comparison
+    const canAttackTargetParam = distanceToTargetParam <= effectiveAttackRadius;
+    const canAttackFreshPosition = distanceToFreshPosition <= effectiveAttackRadius;
+    
+    console.log(`[ATTACK_DEBUG] Can attack target param position: ${canAttackTargetParam}`);
+    console.log(`[ATTACK_DEBUG] Can attack fresh position: ${canAttackFreshPosition}`);
+
+    // Use fresh position for the actual attack decision
+    if (distanceToFreshPosition > effectiveAttackRadius) {
+        console.log(`[ATTACK_DEBUG] ❌ ATTACK CANCELLED: Player moved out of range since attack state was triggered`);
+        console.log(`[ATTACK_DEBUG] Fresh distance (${distanceToFreshPosition.toFixed(3)}) > effective radius (${effectiveAttackRadius.toFixed(3)})`);
+        
+        // Log if we would have attacked using the stale position
+        if (canAttackTargetParam) {
+            console.log(`[ATTACK_DEBUG] 🚨 STALE POSITION WOULD HAVE CAUSED FALSE ATTACK! Target param was in range but fresh position is not.`);
+        }
+        
+        console.log(`[ATTACK_DEBUG] ==================== Attack Cancelled ====================\n`);
+        return;
+    }
+
+    // Set attack cooldown
+    const randomCooldown = randomIntFromInterval(this.plugin.ATTACK_COOLDOWN_MIN_MS, this.plugin.ATTACK_COOLDOWN_MAX_MS);
+    this.plugin.attackCooldowns.set(npc.characterId, now + randomCooldown);
+    
+    console.log(`[ATTACK_DEBUG] ✅ ATTACK PROCEEDING: Setting cooldown of ${randomCooldown}ms`);
+    console.log(`[ATTACK_DEBUG] Next attack available at: ${new Date(now + randomCooldown).toISOString()}`);
+
+    // Face the FRESH position, not the stale target
+    const freshTarget = { 
+        state: { 
+            position: freshPlayerPosition 
+        },
+        characterId: target.characterId
+    };
+    
+    this.faceTarget(npc, freshTarget);
+    console.log(`[ATTACK_DEBUG] NPC facing fresh target position`);
+    
+    // Play attack animation
+    npc.playAnimation("GrappleTell");
+    console.log(`[ATTACK_DEBUG] Playing GrappleTell animation`);
+    
+    // FINAL VALIDATION: Check fresh position one more time right before damage
+    const finalDistance = getDistance(npc.state.position, freshPlayerPosition);
+    console.log(`[ATTACK_DEBUG] Final distance check: ${finalDistance.toFixed(3)}`);
+    
+    if (finalDistance <= effectiveAttackRadius) {
+        console.log(`[ATTACK_DEBUG] 🗡️ APPLYING DAMAGE to player at fresh position`);
+        
+        const { MeleeTypes } = require(path.join(serverModulePath, 'out/servers/ZoneServer2016/models/enums'));
+        
+        // Apply damage using FRESH position data
+        client.character.OnMeleeHit(npc.server, {
+            entity: npc.characterId, 
+            weapon: 0, 
+            damage: npc.npcMeleeDamage, 
+            causeBleed: false, 
+            meleeType: MeleeTypes.FISTS,
+            hitReport: { 
+                characterId: target.characterId, 
+                position: freshPlayerPosition // CRITICAL: Use fresh position, not stale target.state.position
+            }
+        });
+        
+        console.log(`[ATTACK_DEBUG] Damage applied: ${npc.npcMeleeDamage} to character ${target.characterId}`);
+        console.log(`[ATTACK_DEBUG] Hit report position: [${freshPlayerPosition[0].toFixed(3)}, ${freshPlayerPosition[1].toFixed(3)}, ${freshPlayerPosition[2].toFixed(3)}]`);
+        
+        // Log the age of the target parameter for analysis
+        if (npc.lastTargetUpdateTime) {
+            const targetAge = now - npc.lastTargetUpdateTime;
+            console.log(`[ATTACK_DEBUG] Target parameter age: ${targetAge}ms`);
+            if (targetAge > 1000) {
+                console.log(`[ATTACK_DEBUG] ⚠️ WARNING: Target parameter is ${targetAge}ms old!`);
+            }
+        }
+        
+    } else {
+        console.log(`[ATTACK_DEBUG] ❌ FINAL CHECK FAILED: Player moved out of range during attack execution`);
+        console.log(`[ATTACK_DEBUG] Final distance (${finalDistance.toFixed(3)}) > effective radius (${effectiveAttackRadius.toFixed(3)})`);
+    }
+    
+    console.log(`[ATTACK_DEBUG] ==================== Attack Complete ====================\n`);
+}
 
     executeStop(npc, allowSlowFollow = false) {
     if (this.plugin.pathfinding.isReady && npc.wasAggroed) {
@@ -302,12 +473,12 @@ class HumanAI {
     }
     
     if (npc.lastSentSpeed !== 0) { 
-        this.sendMovementPacket(npc, npc.state.orientation, 0); 
+        this.sendMovementPacket(npc, npc.state.orientation, 0, 0);  
     }
 }
 
-    sendMovementPacket(npc, orientation, speed) {
-        npc.lastSentSpeed = speed;
+    sendMovementPacket(npc, orientation, horizontalSpeed, verticalSpeed = 0) {
+        npc.lastSentSpeed = horizontalSpeed;
         npc.state.orientation = orientation;
         npc.server.sendDataToAllWithSpawnedEntity(npc.server._npcs, npc.characterId, "PlayerUpdatePosition", {
             transientId: npc.transientId,
@@ -315,7 +486,8 @@ class HumanAI {
                 sequenceTime: getCurrentServerTimeWrapper().getTruncatedU32(), 
                 position: npc.state.position, unknown3_int8: 0, stance: 66565, engineRPM: 0, 
                 orientation: orientation, frontTilt: 0, sideTilt: 0, angleChange: 0, 
-                verticalSpeed: 0, horizontalSpeed: speed
+                verticalSpeed: verticalSpeed, // Use the new parameter
+                horizontalSpeed: horizontalSpeed
             }
         });
     }
